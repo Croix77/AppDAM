@@ -16,7 +16,7 @@ import cl.duoc.m.R
 @Composable
 fun LessonScreen(s: SchoolUiState,onPractice: ()->Unit,onTest: ()->Unit) {
     val l=s.lesson ?: return
-    val ready=s.practice.isNotEmpty() && s.answers.count { it.correct }==s.practice.size
+    val ready by remember(s.practice,s.answers) {derivedStateOf {s.practice.isNotEmpty() && s.answers.count {it.correct}==s.practice.size}}
     val remaining=(s.assignment?.maxAttempts ?: 0)-s.attempts.size
     Page(l.subject,l.title) {
         Text("Tu avance: ${s.progress}%",style=MaterialTheme.typography.titleMedium)

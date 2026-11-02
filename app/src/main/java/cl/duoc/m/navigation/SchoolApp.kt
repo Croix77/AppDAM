@@ -15,7 +15,7 @@ import cl.duoc.m.ui.theme.MPAZPRO_GrupoTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SchoolApp(wide: Boolean,vm: SchoolViewModel=viewModel()) {
+fun SchoolApp(columns: Int,vm: SchoolViewModel=viewModel()) {
     val s by vm.state.collectAsState()
     MPAZPRO_GrupoTheme(largeText=s.largeText) {
     val snackbar=remember { SnackbarHostState() }
@@ -32,7 +32,7 @@ fun SchoolApp(wide: Boolean,vm: SchoolViewModel=viewModel()) {
                     val user=s.user!!
                     NavHost(nav,"home",Modifier.weight(1f)) {
                         composable("home") {
-                            if(user.role==Role.ESTUDIANTE) HomeScreen(user,s.lessons,wide,{vm.selectLesson(it);nav.navigate("lesson")},{s.lessons.firstOrNull()?.let {vm.selectLesson(it.id);nav.navigate("lesson")}})
+                            if(user.role==Role.ESTUDIANTE) HomeScreen(user,s.lessons,columns,{vm.selectLesson(it);nav.navigate("lesson")},{s.lessons.firstOrNull()?.let {vm.selectLesson(it.id);nav.navigate("lesson")}})
                             else StaffHome(s,{vm.selectStudent(it);nav.navigate("student")},{vm.selectLesson(it);nav.navigate("editor")},{vm.newLesson();nav.navigate("editor")},{vm.loadAudit();nav.navigate("audit")})
                         }
                         composable("lesson") { if(user.role==Role.ESTUDIANTE) s.lesson?.let { LessonScreen(s,{nav.navigate("practice")},{vm.startTest();nav.navigate("test")}) } }

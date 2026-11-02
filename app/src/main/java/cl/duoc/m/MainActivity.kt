@@ -18,7 +18,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             MPAZPRO_GrupoTheme {
                 val size=calculateWindowSizeClass(this)
-                SchoolApp(wide=size.widthSizeClass!=WindowWidthSizeClass.Compact)
+                val columns=when(size.widthSizeClass) {WindowWidthSizeClass.Compact -> 1;WindowWidthSizeClass.Medium -> 2;else -> 3}
+                SchoolApp(columns=columns)
             }
         }
     }

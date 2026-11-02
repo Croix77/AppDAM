@@ -16,7 +16,7 @@ import cl.duoc.m.ui.screens.Avatar
 
 // Conserva bienvenida, logo y mensaje de Comenzar; agrega las unidades asignadas.
 @Composable
-fun HomeScreen(user: User,lessons: List<Lesson>,wide: Boolean,onLesson: (Long)->Unit,onBegin: ()->Unit) {
+fun HomeScreen(user: User,lessons: List<Lesson>,columns: Int,onLesson: (Long)->Unit,onBegin: ()->Unit) {
     val context=LocalContext.current
     Page("Bienvenido a MPAZ PRO", "Hola, ${user.name}. Aprende a tu ritmo.") {
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) {
@@ -30,7 +30,7 @@ fun HomeScreen(user: User,lessons: List<Lesson>,wide: Boolean,onLesson: (Long)->
         Action("Comenzar",lessons.isNotEmpty()) { Toast.makeText(context,"Iniciando MPAZ PRO",Toast.LENGTH_SHORT).show();onBegin() }
         Text("Elige una asignatura",style=MaterialTheme.typography.titleLarge)
         if(lessons.isEmpty()) Notice("Tu docente aún no te asignó unidades publicadas.")
-        lessons.chunked(if(wide) 2 else 1).forEach { pair -> Row(horizontalArrangement=Arrangement.spacedBy(16.dp)) {
+        lessons.chunked(columns).forEach { pair -> Row(horizontalArrangement=Arrangement.spacedBy(16.dp)) {
             pair.forEach { lesson -> Card(onClick={onLesson(lesson.id)},modifier=Modifier.weight(1f),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)) {
                 Column(Modifier.padding(20.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
                     Text(lesson.subject,style=MaterialTheme.typography.labelLarge)
@@ -39,7 +39,7 @@ fun HomeScreen(user: User,lessons: List<Lesson>,wide: Boolean,onLesson: (Long)->
                     Text("Abrir unidad →",color=MaterialTheme.colorScheme.primary)
                 }
             } }
-            if(wide && pair.size==1) Spacer(Modifier.weight(1f))
+            repeat(columns-pair.size) {Spacer(Modifier.weight(1f))}
         } }
         Notice("Tu avance se guarda en este dispositivo. Si necesitas ayuda, consulta a tu docente.")
     }
