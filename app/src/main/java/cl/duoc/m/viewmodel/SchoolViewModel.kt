@@ -21,7 +21,8 @@ data class SchoolUiState(
     val review: List<Pair<Question,Answer>> = emptyList(), val report: Report? = null,
     val audit: List<AuditEntry> = emptyList(), val exportedText: String? = null,
     val student: User? = null, val assignments: List<Assignment> = emptyList(), val largeText: Boolean = false,
-    val activityFeedback: Map<Long,String> = emptyMap(), val lessonProgress: Map<Long,Int> = emptyMap()
+    val activityFeedback: Map<Long,String> = emptyMap(), val lessonProgress: Map<Long,Int> = emptyMap(),
+    val testFinished: Boolean = false
 )
 
 class SchoolViewModel(application: Application) : AndroidViewModel(application) {
@@ -69,7 +70,7 @@ class SchoolViewModel(application: Application) : AndroidViewModel(application) 
         require(_state.value.user?.role==Role.DOCENTE && _state.value.students.any { it.id==id }) { "Acceso reservado al docente asignado" }
         _state.update { it.copy(student=repository.getUser(id),assignments=it.lessons.mapNotNull { l -> repository.assignment(id,l.id) }) }
     }
-    fun selectLesson(id: Long)=launchWork { _state.update { it.copy(choices=emptyMap(),report=null,activityFeedback=emptyMap()) }; loadLessonData(id) }
+    fun selectLesson(id: Long)=launchWork { _state.update { it.copy(choices=emptyMap(),report=null,activityFeedback=emptyMap(),testFinished=false) }; loadLessonData(id) }
     private fun loadLessonData(id: Long) {
         val user=_state.value.user ?: return
         val lesson=repository.getLesson(id)
@@ -96,12 +97,13 @@ class SchoolViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
     fun choose(questionId: Long,choice: Int) { if(!_state.value.busy) _state.update { it.copy(choices=it.choices+(questionId to choice)) } }
-    fun startTest() { if(!_state.value.busy) _state.update { it.copy(choices=emptyMap()) } }
+    fun startTest() { if(!_state.value.busy) _state.update { it.copy(choices=emptyMap(),testFinished=false) } }
+    fun showTestResult() { if(!_state.value.busy && _state.value.attempts.isNotEmpty()) _state.update {it.copy(testFinished=true)} }
     fun submitTest()=launchWork {
         val s=_state.value
         repository.submitTest(actor(),s.lesson!!.id,s.choices)
-        _state.update { it.copy(choices=emptyMap(),message="Prueba guardada. Revisa tus respuestas.") }
         loadLessonData(s.lesson.id)
+        _state.update { it.copy(choices=emptyMap(),testFinished=true,message=null) }
     }
     fun assignmentErrors(count: String,start: String,end: String): Map<String,String> = buildMap {
         if((count.toIntOrNull() ?: 0) !in 1..5) put("count","Escribe un número entre 1 y 5")
