@@ -16,7 +16,7 @@ import cl.duoc.m.viewmodel.SchoolUiState
 @Composable
 fun LoginScreen(state: SchoolUiState,onLogin: (String,String)->Unit) {
     var username by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     Page("Tu espacio para aprender", "MPAZ PRO 2.º · Lenguaje, Matemática, Ciencias e Historia") {
         Image(painterResource(R.drawable.logo_mpaz),"Logo de MPAZ PRO",Modifier.fillMaxWidth().height(110.dp))
         Panel("Iniciar sesión") {

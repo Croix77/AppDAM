@@ -9,6 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cl.duoc.m.ui.components.*
 import cl.duoc.m.viewmodel.SchoolUiState
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import cl.duoc.m.R
 
 @Composable
 fun LessonScreen(s: SchoolUiState,onPractice: ()->Unit,onTest: ()->Unit) {
@@ -19,6 +22,8 @@ fun LessonScreen(s: SchoolUiState,onPractice: ()->Unit,onTest: ()->Unit) {
         Text("Tu avance: ${s.progress}%",style=MaterialTheme.typography.titleMedium)
         LinearProgressIndicator(progress={s.progress/100f},modifier=Modifier.fillMaxWidth())
         s.unavailable?.let { Notice(it,true) }
+        AudioHelp()
+        Image(painterResource(R.drawable.learning_garden),"Ilustración original: un libro abierto y una planta creciendo",Modifier.fillMaxWidth().height(140.dp))
         Panel("Lo que aprenderás") { Text(l.objective) }
         Panel("Lee y descubre") { Text(l.explanation,style=MaterialTheme.typography.bodyLarge) }
         Panel("Un ejemplo para empezar") { Text(l.example,style=MaterialTheme.typography.bodyLarge) }
