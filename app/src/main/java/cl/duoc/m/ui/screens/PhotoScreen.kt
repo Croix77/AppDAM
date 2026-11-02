@@ -25,11 +25,10 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 @Composable
-fun Avatar(path: String,name: String,modifier: Modifier=Modifier) {
-    var bitmap by remember(path) {mutableStateOf<android.graphics.Bitmap?>(null)}
-    LaunchedEffect(path) {bitmap=withContext(Dispatchers.IO) {if(path.isBlank()) null else MediaFiles.decode(path)}}
-    if(bitmap!=null) Image(bitmap!!.asImageBitmap(),"Imagen de $name",modifier.size(112.dp).clip(CircleShape),contentScale=ContentScale.Crop)
-    else Surface(modifier.size(112.dp),shape=CircleShape,color=MaterialTheme.colorScheme.secondaryContainer) {Box(contentAlignment=androidx.compose.ui.Alignment.Center) {Text(name.takeLast(3).uppercase(),style=MaterialTheme.typography.headlineMedium)}}
+fun Avatar(path: String,name: String,modifier: Modifier=Modifier,size: androidx.compose.ui.unit.Dp=112.dp) {
+    val bitmap by produceState<android.graphics.Bitmap?>(null,path) { value=withContext(Dispatchers.IO) {if(path.isBlank()) null else MediaFiles.decode(path)} }
+    if(bitmap!=null) Image(bitmap!!.asImageBitmap(),"Imagen de $name",modifier.size(size).clip(CircleShape),contentScale=ContentScale.Crop)
+    else Surface(modifier.size(size),shape=CircleShape,color=MaterialTheme.colorScheme.secondaryContainer) {Box(contentAlignment=androidx.compose.ui.Alignment.Center) {Text(name.removePrefix("Estudiante ").take(2).uppercase(),style=if(size<80.dp) MaterialTheme.typography.labelLarge else MaterialTheme.typography.headlineMedium)}}
 }
 @Composable
 fun PhotoScreen(s: SchoolUiState,vm: SchoolViewModel) {

@@ -1,49 +1,33 @@
-# MPAZ PRO 2.º
+# Explora Marcela Paz
 
-Aplicación Android hecha para DSY1105 de Duoc UC. Sirve para reforzar contenidos de Segundo Básico con textos cortos, audio y ejercicios. Es un prototipo local para la entrega académica, no un sistema escolar real.
+Prototipo académico Android para DSY1105, Duoc UC, basado en el caso MPAZ PRO 2.º de la Escuela Escritora Marcela Paz. La identidad visual implementada se llama Explora Marcela Paz. Apoya el refuerzo de contenidos de Segundo Básico (7 u 8 años). No es un sistema escolar de producción.
 
-**Equipo 5**
-- NQDESTROYER
-- Croix77
-
-## Qué se puede hacer
-
-- Entrar como estudiante, docente o UTP.
-- Ver cuatro asignaturas y ocho unidades con explicación, ejemplo y audio.
-- Practicar con alternativas, respuesta numérica u orden de pasos.
-- Rendir una prueba final cuando la práctica está completa.
-- Revisar intentos, avance y respuestas anteriores.
-- Asignar unidades, fechas e intentos desde el perfil docente.
-- Revisar informes, guardar observaciones y descargar un TXT.
-- Crear, revisar, publicar y deshabilitar unidades desde UTP.
-- Cambiar la imagen ficticia del estudiante desde el perfil docente.
-- Aumentar o disminuir el tamaño del texto con A+/A−.
-
-El contenido es de demostración. Los objetivos están escritos de forma simple y deben ser revisados por el docente; no son códigos OA oficiales.
+**Equipo 5:** NQDESTROYER y Croix77.
 
 ## Ejecutar
 
 1. Abrir la carpeta raíz en Android Studio y esperar la sincronización de Gradle.
-2. Usar Android SDK 36, Gradle 8.13, AGP 8.13.2 y Kotlin 2.0.21.
-3. Crear o iniciar un emulador con API 33 o superior. La app instala desde API 26. Las pruebas de este equipo se corrieron en API 37.
-4. Ejecutar el módulo `app`. La app funciona sin servidor ni internet; la primera sincronización sí descarga dependencias.
+2. Usar JDK 17, Android SDK 36 y el wrapper Gradle 8.13. AGP 8.13.2 y Kotlin 2.0.21 se conservan de la base que compila.
+3. Crear un emulador Pixel 3a u otro Android compatible, arrancarlo y ejecutar `app`. Si no conecta, detenerlo y usar Cold Boot. Las guías no exigen un Pixel específico.
+4. El mínimo de instalación se conserva en API 26. Para las prácticas de las guías 11-13 usar API 33 o superior. Verificar además en teléfono físico para la guía 13.
+5. La aplicación funciona localmente sin servidor ni conexión a internet. La primera sincronización sí descarga dependencias.
 
-En este computador se compila con JDK 17 (Temurin). Android Studio trae JBR 25 y esta versión de AGP no lo acepta: si aparece un error con `25.0.4`, ir a **Settings → Build, Execution, Deployment → Build Tools → Gradle → Gradle JDK** y elegir el JDK 17.
-
-En PowerShell:
+En PowerShell, si Java no está en PATH:
 
 ```powershell
-$env:JAVA_HOME = 'C:\Program Files\Eclipse Adoptium\jdk-17.0.20.101-hotspot'
+$env:JAVA_HOME = 'C:\Program Files\Android\Android Studio\jbr'
 $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 .\gradlew.bat assembleDebug
 .\gradlew.bat testDebugUnitTest
-.\gradlew.bat connectedDebugAndroidTest
+.\gradlew.bat connectedDebugAndroidTest -PmpazIsolatedTests=true
 .\gradlew.bat lintDebug
 ```
 
-El APK de prueba queda en `app/build/outputs/apk/debug/app-debug.apk`. No es un APK release firmado.
+El APK debug se genera en `app/build/outputs/apk/debug/app-debug.apk`. El APK release se genera en `app/build/outputs/apk/release/app-release.apk` y usa una clave local fuera del repositorio; nunca subas la clave ni las contraseñas a GitHub.
 
-## Cuentas de prueba
+Las pruebas con `mpazIsolatedTests=true` utilizan el paquete `cl.duoc.m.validation`, separado de la instalación habitual, para proteger el progreso guardado por el usuario. Después de probar, ejecutar `assembleDebug` sin ese parámetro antes de distribuir el APK normal.
+
+## Cuentas ficticias
 
 | Rol | Usuario | Clave |
 |---|---|---|
@@ -52,49 +36,55 @@ El APK de prueba queda en `app/build/outputs/apk/debug/app-debug.apk`. No es un 
 | Docente | docente | Profe123 |
 | UTP | utp | Utp12345 |
 
-Las cuentas se crean solas al abrir la app por primera vez. Son ficticias; no usar nombres, fotos, RUT ni claves de personas reales.
+Estas credenciales son públicas únicamente para la demostración. No usar nombres, fotos, RUT ni claves reales de alumnos. Las cuentas se crean en SQLite al instalar/iniciar la aplicación por primera vez; no hay registro público para autoasignarse roles privilegiados.
 
-## Estructura
+## Funcionalidades
+
+- Login con validaciones por campo, contraseña oculta y navegación por rol.
+- Mi perfil para estudiante, docente y UTP: datos ficticios de la cuenta, curso o área de trabajo, imagen y ajustes de lectura/sesión. El estudiante consulta además su docente y asignaturas asignadas; no puede editar su foto ni abrir informes pedagógicos desde este perfil.
+- Inicio con la identidad Explora Marcela Paz, logo de libro/camino/estrella, tarjeta ilustrada y cuatro accesos por asignatura. Contiene ocho unidades y 42 preguntas. Las unidades se muestran al abrir su asignatura; la tarjeta principal permite continuar una unidad real.
+- Nuevas prácticas: ordenar hechos de un relato, escribir resultados numéricos, secuenciar una experiencia científica e interpretar un plano de comunidad. Las pruebas finales usan selección de alternativas.
+- Explicaciones y ejemplos originales, ilustración vectorial propia e instrucciones de audio empaquetadas. Los objetivos son descripciones de demostración, no códigos OA oficiales certificados.
+- Práctica con retroalimentación, progreso SQLite y prueba final habilitada al completar correctamente la práctica.
+- Actividades y pruebas muestran su posición (por ejemplo, 1 de 3) y el número completado/respondido. Al terminar se abre una confirmación con el avance guardado. El resultado del examen distingue preguntas respondidas de respuestas correctas y puede consultarse de nuevo sin gastar intentos.
+- Botón superior Volver con texto y acciones Volver a la unidad al finalizar.
+- Disponibilidad e intentos configurables por docente. Cada envío completo consume un intento; salir sin enviar no lo consume. Transacción SQLite para guardar intento y respuestas conjuntamente.
+- Estudiante ve sus propios resultados, sin informes pedagógicos ni edición de imágenes.
+- Docente administra sus estudiantes, asigna unidades autorizadas, consulta informes por objetivo/unidad, guarda y valida observaciones y descarga un informe TXT.
+- Docente toma o selecciona una imagen ficticia, la revisa y confirma antes de asociarla a un estudiante. Se conserva una copia privada local. El estudiante solo la visualiza. Restauración de avatar predeterminado.
+- UTP crea/edita borradores, agrega preguntas, revisa, autoriza, publica y deshabilita unidades; historial de acciones. Las preguntas guardadas se conservan para no alterar respuestas históricas.
+- Diseño compacto/medio/expandido con Window Size Classes: una/dos/tres columnas en inicio y contenido con ancho máximo. Formularios desplazables. A+/A− cambia el tamaño de texto y lo conserva con DataStore.
+- Animación de visibilidad/color para respuestas y estados de carga reales.
+
+## Estructura y material de referencia
 
 ```
 app/src/main/java/cl/duoc/m/
-  model/         datos, roles y reglas de validación
-  repository/    SQLite, consultas, datos iniciales, archivos y DataStore
-  viewmodel/     estado de las pantallas y acciones
-  navigation/    rutas y menú por rol
-  ui/            pantallas, componentes y tema
+  model/         datos y reglas de validación
+  repository/    SQLite, consultas, semillas, archivos y DataStore
+  viewmodel/     estado de pantalla y acciones con StateFlow
+  navigation/    rutas y entradas por rol
+  ui/            inicio, componentes, pantallas y tema Material 3
 ```
 
-La explicación completa está en [docs/ARQUITECTURA.md](docs/ARQUITECTURA.md). También se mantiene [arquitectura.txt](arquitectura.txt) en la raíz.
+Guía 8: componentes base. Guía 9: adaptabilidad. Guía 11: formularios, navegación y ViewModel compartido. Guía 12: estado, DataStore y animaciones. Guía 13: cámara y galería. No se incorporan backend, Retrofit, Hilt, Room ni KSP. Las incorporaciones indispensables no desarrolladas en las guías están explicadas en [la guía complementaria](docs/GUIA_COMPLEMENTARIA.md).
 
-Se usó lo visto en las guías: componentes, adaptabilidad, formularios, ViewModel, StateFlow, DataStore, animaciones, cámara y galería. No se agregó backend, Retrofit, Hilt, Room ni KSP.
+Leer también [el recorrido de demostración](docs/RECORRIDO_DEMOSTRACION.md) y [la matriz de requisitos](docs/REQUISITOS.md).
 
-## Base de datos
+## Datos, materiales y alcance
 
-La app usa SQLite con `SQLiteOpenHelper`, sin Room. Guarda usuarios, unidades, preguntas, asignaciones, prácticas, intentos, respuestas, observaciones e historial UTP. La versión 2 conserva los datos de la versión 1 y las preguntas con respuestas históricas no se borran.
+Todos los registros semilla son ficticios. Relato, ejercicios e ilustración `learning_garden.xml` son originales para este prototipo. El nuevo logo y la ilustración de inicio se prepararon con asistencia generativa desde el boceto aprobado; los iconos de asignatura son recursos vectoriales originales. El recurso de meme anterior fue retirado. Los recursos y su preparación están descritos en [Identidad Explora](docs/IDENTIDAD_EXPLORA.md). El audio usa un texto de instrucciones original y una voz sintética local de demostración (Helena), sin servicios externos ni grabaciones personales.
 
-## Pruebas
+El almacenamiento es de un solo dispositivo: no sincroniza entre el teléfono del docente y el del estudiante. Los roles permiten demostrar los flujos académicos dentro de una misma instalación, no sustituyen autenticación de servidor. No hay diagnósticos por IA. Los informes se interpretan y validan por el docente.
 
-Resultados de la última corrida:
+UTP y docente tienen cuentas preconfiguradas; el alta de instituciones, cursos y usuarios no forma parte del MVP. El backend sugerido en el caso queda como evolución posterior. La configuración actual de Kotlin/AGP se conserva porque compila; una actualización de herramientas se debe abordar por separado.
 
-- `assembleDebug`: correcto.
-- `testDebugUnitTest`: 5 pruebas correctas.
-- `connectedDebugAndroidTest`: 12 pruebas correctas en el emulador `Medium_Phone_API_37.0` (API 37).
-- `lintDebug`: 0 errores, 24 advertencias y 1 sugerencia. No hay errores que impidan compilar.
+## Equipo y evidencias
 
-El detalle está en [docs/VERIFICACION.md](docs/VERIFICACION.md). Antes de entregar falta probar cámara y galería en un teléfono físico, escuchar el audio en el dispositivo y validar los objetivos con el docente.
+Integrantes del Equipo 5: NQDESTROYER y Croix77. La planificación está en [docs/PLANIFICACION.md](docs/PLANIFICACION.md); las tarjetas importables con autoría Git y hashes se encuentran en [docs/trello_import.csv](docs/trello_import.csv).
 
-## Trello y evidencias
+Tablero Trello: [MPAZ PRO 2.º - Equipo 5](https://trello.com/invite/b/6ae90a63404d0afa0cd31554/ATTI360830b7568f314d8657f806489c8ab756B22D6F/mpaz-pro-2-equipo-5-%F0%9F%93%B1). Es un enlace de invitación: compártelo solo con las personas que deban unirse.
 
-El plan está en [docs/PLANIFICACION.md](docs/PLANIFICACION.md). Las tarjetas con autoría y hashes Git están en [docs/trello_import.csv](docs/trello_import.csv). El tablero ya está creado: [MPAZ PRO 2.º - Equipo 5](https://trello.com/invite/b/6ae90a63404d0afa0cd31554/ATTI360830b7568f314d8657f806489c8ab756B22D6F/mpaz-pro-2-equipo-5-%F0%9F%93%B1). Este enlace invita a quien lo tenga a unirse al tablero.
+Antes de la entrega faltan la prueba en un teléfono físico y la validación de los objetivos y contenidos con el docente. Los commits deben conservar autoría y fechas reales.
 
-Las tarjetas se mueven a medida que avanza el trabajo. Cada integrante deja sus comentarios y el enlace al commit cuando corresponde. No se inventan fechas ni participaciones.
-
-## Alcance
-
-- Un solo dispositivo: no sincroniza entre teléfonos.
-- Sin backend, sin registro público y sin altas de instituciones o cursos.
-- Informes solo para el docente; el estudiante ve su propio avance.
-- La imagen la administra el docente y debe ser ficticia.
-- No hay diagnósticos automáticos ni inteligencia artificial.
-- El APK release firmado queda pendiente si el docente lo exige.
+APK release firmado generado localmente: `app/build/outputs/apk/release/app-release.apk`. La clave de firma se guarda fuera del repositorio; el equipo debe custodiar una copia segura para futuras actualizaciones. Instalar y validar el APK en un teléfono antes de presentarlo.

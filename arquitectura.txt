@@ -16,7 +16,8 @@ Versión revisada por NQDESTROYER · Noviembre 2026
 3. NAVEGACIÓN IMPLEMENTADA
 - Login: sin sesión. Archivo ui/screens/LoginScreen.kt
 - Home estudiante: ruta "home". Archivo ui/HomeScreen.kt
-- Asignaturas del estudiante: ruta "subject/{subject}". Archivo ui/screens/SubjectScreen.kt
+- Asignaturas del estudiante: ruta "subject". Archivo ui/HomeScreen.kt (SubjectUnitsScreen)
+- Perfil propio de cada rol: ruta "profile". Archivo ui/screens/AccountProfileScreen.kt
 - Detalle de unidad y contenido: ruta "lesson". Archivo ui/screens/LearningScreens.kt
 - Práctica: ruta "practice". Archivo ui/screens/LearningScreens.kt
 - Prueba final y revisión: ruta "test". Archivo ui/screens/LearningScreens.kt

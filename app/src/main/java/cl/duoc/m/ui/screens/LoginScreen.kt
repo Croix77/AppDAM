@@ -1,6 +1,5 @@
 package cl.duoc.m.ui.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
@@ -11,11 +10,9 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import cl.duoc.m.R
 import cl.duoc.m.ui.components.*
 import cl.duoc.m.viewmodel.SchoolUiState
 
@@ -24,8 +21,8 @@ fun LoginScreen(state: SchoolUiState,onLogin: (String,String)->Unit) {
     var username by rememberSaveable { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
-    Page("Tu espacio para aprender", "MPAZ PRO 2.º · Lenguaje, Matemática, Ciencias e Historia") {
-        Image(painterResource(R.drawable.logo_mpaz),"Logo de MPAZ PRO",Modifier.fillMaxWidth().height(110.dp))
+    Page("Aprende a tu ritmo", "Segundo Básico · Lenguaje, Matemática, Ciencias e Historia") {
+        BrandLockup()
         Panel("Iniciar sesión") {
             Text("Usa la cuenta de prueba que te entregó tu docente.")
             Field("Usuario",username,{username=it},state.loginErrors["username"],leadingIcon=Icons.Filled.Person)

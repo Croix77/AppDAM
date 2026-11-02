@@ -1,8 +1,24 @@
+import java.io.File
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
+
+val localSigningSettings = Properties().apply {
+    val settingsFile = rootProject.file("local.properties")
+    if (settingsFile.isFile) settingsFile.inputStream().use(::load)
+}
+val signingPropertiesPath = System.getenv("MPAZ_SIGNING_PROPERTIES")
+    ?: localSigningSettings.getProperty("mpaz.signingProperties")
+val releaseSigningProperties = Properties().apply {
+    val propertiesFile = signingPropertiesPath?.let { File(it) }
+    if (propertiesFile?.isFile == true) propertiesFile.inputStream().use(::load)
+}
+val hasReleaseSigning = listOf("storeFile", "storePassword", "keyAlias", "keyPassword")
+    .all { !releaseSigningProperties.getProperty(it).isNullOrBlank() }
 
 android {
     namespace = "cl.duoc.m"
@@ -11,7 +27,9 @@ android {
     }
 
     defaultConfig {
-        applicationId = "cl.duoc.m"
+        // La variante de comprobación se instala como otra app y no borra el avance del usuario.
+        applicationId = if (providers.gradleProperty("mpazIsolatedTests").orNull == "true")
+            "cl.duoc.m.validation" else "cl.duoc.m"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
@@ -20,9 +38,20 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = File(releaseSigningProperties.getProperty("storeFile"))
+                storePassword = releaseSigningProperties.getProperty("storePassword")
+                keyAlias = releaseSigningProperties.getProperty("keyAlias")
+                keyPassword = releaseSigningProperties.getProperty("keyPassword")
+            }
+        }
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
+            if (hasReleaseSigning) signingConfig = signingConfigs.getByName("release")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

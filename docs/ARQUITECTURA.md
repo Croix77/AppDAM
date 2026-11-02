@@ -24,7 +24,8 @@ Documento mantenido por NQDESTROYER y actualizado para la rama `feature/entrega-
 |---|---|---|---|
 | Inicio de sesión | Sin sesión | Todos | `ui/screens/LoginScreen.kt` |
 | Inicio del estudiante | `home` | Estudiante | `ui/HomeScreen.kt` |
-| Asignaturas del estudiante | `subject/{subject}` | Estudiante | `ui/screens/SubjectScreen.kt` |
+| Asignaturas del estudiante | `subject` | Estudiante | `ui/HomeScreen.kt` (`SubjectUnitsScreen`) |
+| Perfil propio | `profile` | Todos | `ui/screens/AccountProfileScreen.kt` |
 | Detalle de unidad y contenido | `lesson` | Estudiante | `ui/screens/LearningScreens.kt` |
 | Práctica | `practice` | Estudiante | `ui/screens/LearningScreens.kt` |
 | Prueba final y revisión | `test` | Estudiante | `ui/screens/LearningScreens.kt` |

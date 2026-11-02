@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("cl.duoc.m", appContext.packageName)
+        assertTrue(appContext.packageName in setOf("cl.duoc.m", "cl.duoc.m.validation"))
     }
 }

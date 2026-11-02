@@ -36,12 +36,12 @@ Los responsables de la tabla son una propuesta para repartir la revisión y la d
 | 9 | Cámara, galería e imagen del estudiante | Hecho | Croix77 | El docente elige o toma una imagen ficticia, la confirma y el estudiante solo la ve. |
 | 10 | Audio y descarga del informe | Hecho | NQDESTROYER | El audio local se reproduce y se detiene; el informe se guarda con el selector de documentos. |
 | 11 | Accesibilidad y tamaños de pantalla | Hecho | Croix77 | A+/A− cambia el texto y se conserva; la interfaz se adapta a ancho compacto, medio y expandido. |
-| 12 | Pruebas unitarias e instrumentadas | Hecho | NQDESTROYER | 5 pruebas unitarias y 12 instrumentadas pasan en el emulador; el resultado queda documentado. |
+| 12 | Pruebas unitarias e instrumentadas | Hecho | NQDESTROYER | 5 pruebas unitarias y 14 instrumentadas pasan en el emulador; el resultado queda documentado. |
 | 13 | README, arquitectura y Trello | Hecho | NQDESTROYER | README con enlace; arquitectura actualizada por NQDESTROYER; tablero creado. |
-| 14 | Revisión de íconos y animaciones | En revisión | Croix77 | Íconos de Material en login y errores; transiciones suaves entre pantallas; sin errores de compilación. |
+| 14 | Revisión de íconos y animaciones | Hecho | NQDESTROYER | Íconos Material en login y errores; transición suave entre pantallas; verificado al compilar. |
 | 15 | Prueba en teléfono físico | Por hacer | Croix77 | Cámara, galería, audio y descarga probados en un teléfono real; registrar modelo y resultado. |
 | 16 | Validar objetivos con el docente | Por hacer | NQDESTROYER | El docente revisa los objetivos descriptivos y confirma que sirven para la demostración. |
-| 17 | APK release firmado | Por hacer | Croix77 | Solo si el docente lo pide; usar una clave del equipo y no subirla al repositorio. |
+| 17 | APK release firmado | Hecho | NQDESTROYER | APK release firmado con clave local fuera del repositorio; conservar copia segura de la clave del equipo. |
 | 18 | Informe consolidado por curso | Por hacer | NQDESTROYER | Opcional. Agregar un resumen por curso u objetivo si alcanza el tiempo; no reemplaza el informe por estudiante. |
 | 19 | Audios e imágenes por unidad para UTP | Por hacer | Croix77 | Opcional. Evaluar si se agrega un administrador simple; hoy solo existe el audio general y la imagen del estudiante. |
 

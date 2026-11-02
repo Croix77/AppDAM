@@ -19,4 +19,4 @@
 "Validar OA y contenidos con el docente","Por hacer","Pendiente según docs/REQUISITOS.md. Registrar el resultado real de la revisión; no asignar autoría hasta confirmar participación."
 "Prueba en teléfono físico","Por hacer","Pendiente según docs/VERIFICACION.md. Probar cámara, galería, audio y descarga del informe; registrar modelo y resultados."
 "Agregar miembros y registrar actividad real en Trello","Por hacer","El tablero ya existe. Agregar a los integrantes y registrar comentarios/enlaces de commit solo para trabajo que cada uno confirme haber realizado. No inventar fechas ni participaciones."
-"Confirmar requisito de APK release firmado","Por hacer","Pendiente sujeto a confirmación del docente. Si lo solicita, generar APK firmado con clave resguardada por el equipo."
+"APK release firmado","Hecho","APK generado y verificado localmente con firma v2. Artefacto en app/build/outputs/apk/release/app-release.apk; clave fuera del repositorio. Falta instalarlo y probarlo en un teléfono físico."

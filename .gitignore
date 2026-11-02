@@ -16,3 +16,4 @@ local.properties
 .kotlin/
 *.jks
 *.keystore
+*.p12
