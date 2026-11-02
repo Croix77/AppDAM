@@ -1,0 +1,93 @@
+ARQUITECTURA DEL MVP MPAZ PRO 2.º
+Versión alineada con la rama tomasdev · Noviembre 2026
+
+1. ALCANCE
+- Aplicación Android para reforzar contenidos de Segundo Básico (7 u 8 años).
+- Un solo dispositivo: no hay sincronización ni backend.
+- Persistencia local con SQLite y una preferencia de accesibilidad con DataStore.
+- Contenido original de demostración. Los objetivos son descriptivos y deben validarse con el docente.
+- Sin datos reales, sin diagnósticos automáticos y sin inteligencia artificial.
+
+2. ROLES
+- Estudiante: ve unidades publicadas y asignadas, lee, escucha audio, practica, rinde la prueba y revisa sus respuestas. No ve informes ni cambia su imagen.
+- Docente: ve sus estudiantes, asigna unidades autorizadas, define fechas e intentos, revisa informes, guarda observaciones, descarga el informe y administra la imagen ficticia. No crea ni publica unidades.
+- UTP: crea y edita borradores, agrega preguntas, cambia estados, publica o deshabilita unidades y consulta el historial. No ve informes pedagógicos.
+
+3. NAVEGACIÓN IMPLEMENTADA
+- Login: sin sesión. Archivo ui/screens/LoginScreen.kt
+- Home estudiante: ruta "home". Archivo ui/HomeScreen.kt
+- Detalle de unidad y contenido: ruta "lesson". Archivo ui/screens/LearningScreens.kt
+- Práctica: ruta "practice". Archivo ui/screens/LearningScreens.kt
+- Prueba final y revisión: ruta "test". Archivo ui/screens/LearningScreens.kt
+- Home docente o UTP: ruta "home". Archivo ui/screens/StaffScreens.kt
+- Perfil y asignaciones del estudiante: ruta "student". Archivo ui/screens/StaffScreens.kt
+- Informe pedagógico: ruta "report". Archivo ui/screens/StaffScreens.kt
+- Imagen ficticia del estudiante: ruta "photo". Archivo ui/screens/PhotoScreen.kt
+- Editor de unidad y preguntas: ruta "editor". Archivo ui/screens/StaffScreens.kt
+- Historial de cambios: ruta "audit". Archivo navigation/SchoolApp.kt
+
+La barra superior permite volver, cambiar el tamaño del texto con A+/A− y cerrar sesión. Las rutas usan un fundido breve.
+
+4. CAPAS Y RESPONSABILIDADES
+- model: datos, roles, estados y reglas de validación. model/SchoolModels.kt
+- repository: consultas SQLite, permisos, transacciones, archivos y DataStore. repository/*.kt
+- viewmodel: estado de pantalla con StateFlow, acciones y errores. viewmodel/SchoolViewModel.kt
+- navigation: rutas, barra superior y entradas por rol. navigation/SchoolApp.kt
+- ui: pantallas, componentes y tema Material 3. ui/**
+
+Flujo: la pantalla llama una acción del ViewModel; el ViewModel valida, pide datos al repositorio y actualiza SchoolUiState; Compose observa el estado y se recompone. La UI no consulta SQLite directamente.
+
+5. BASE DE DATOS LOCAL (SQLite versión 2)
+- users: cuenta ficticia, rol, curso, docente asignado, sal/hash y ruta de imagen.
+- lessons: unidad, asignatura como texto, objetivo, explicación, ejemplo, estado y autoría.
+- questions: preguntas de práctica o prueba, tres alternativas, respuesta correcta, explicación y tipo.
+- assignments: unidad asignada a un estudiante, fechas y máximo de intentos.
+- practice: última respuesta de práctica por estudiante y pregunta.
+- attempts: intentos de prueba con puntaje, total y fecha.
+- test_answers: respuestas seleccionadas en cada intento.
+- notes: observación del docente y su validación.
+- audit: fecha, actor y acción de gestión UTP.
+
+Relación con el diseño inicial de 12 entidades:
+- Asignatura y Curso: campos de texto en lessons y users. Las cuatro asignaturas son fijas.
+- Unidad: lessons.
+- Objetivo de aprendizaje: lessons.objective como descripción, sin código OA oficial.
+- Examen: preguntas con final_test = 1, más attempts y test_answers.
+- Recurso: audio en res/raw, ilustración vectorial, logo y ruta de imagen en users.photo.
+- Autonomía y Recurso_Estudiante: no se implementan como tablas; el progreso sale de practice y attempts.
+- Informe pedagógico: se construye desde attempts, test_answers y notes; no se duplica en otra tabla.
+- Curso y Estudiante_Curso: users.course y users.teacher_id; el MVP no administra cursos ni altas.
+
+La simplificación evita duplicar datos y mantiene el MVP entendible para el nivel del curso. No se usa Room, Hilt, Retrofit ni backend porque la aplicación es local y las guías no los requieren.
+
+6. REGLAS DE NEGOCIO PRINCIPALES
+- UTP: BORRADOR → EN_REVISION → AUTORIZADO → PUBLICADO → DESHABILITADO.
+- Antes de autorizar o publicar se exige al menos una pregunta de práctica y una de prueba.
+- El docente solo asigna unidades AUTORIZADO o PUBLICADO.
+- El estudiante solo ve unidades PUBLICADO que además le fueron asignadas.
+- La prueba final se habilita cuando la práctica está completa; cada envío usa un intento.
+- El intento y sus respuestas se guardan en una transacción.
+- El informe es exclusivo del docente y no genera diagnósticos automáticos.
+- La imagen solo la administra el docente y debe ser ficticia.
+
+7. RECURSOS NATIVOS UTILIZADOS
+- Cámara y galería mediante contratos de actividad y FileProvider, solo para el docente.
+- Audio local con MediaPlayer desde res/raw, sin micrófono ni internet.
+- Descarga del informe con el selector de documentos del sistema (CreateDocument).
+
+8. FUERA DE ALCANCE DEL MVP
+- Backend, sincronización, autenticación de servidor y multi-dispositivo.
+- CRUD de asignaturas, cursos o instituciones.
+- Gestor UTP de audios e imágenes por unidad.
+- Informe consolidado por curso u objetivo más allá del detalle por estudiante y unidad.
+- Firma release si el docente no la exige; el APK de prueba es debug.
+- Diagnósticos automáticos, IA generativa y datos reales de estudiantes.
+
+9. TRAZABILIDAD CON LA RÚBRICA
+- IE 2.1.1 Interfaz y navegación: SchoolApp, HomeScreen, LearningScreens, StaffScreens, Page.
+- IE 2.1.2 Formularios y validación visual: Field, LoginScreen, SchoolComponents, StaffScreens.
+- IE 2.2.1 Lógica desacoplada: FormRules, SchoolViewModel, SchoolRepository.
+- IE 2.2.2 Animaciones: AnimatedVisibility, animateColorAsState, transiciones del NavHost.
+- IE 2.3.1 Modularidad y persistencia: carpetas por capa, SchoolDatabase, SQLite, ReadingPreferences.
+- IE 2.3.2 GitHub y Trello: repositorio público, commits por avance y tablero de planificación.
+- IE 2.4.1 Recursos nativos: PhotoScreen, MediaFiles, AudioHelp, descarga de informe.
