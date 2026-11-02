@@ -49,6 +49,7 @@ class SchoolFlowTest {
         compose.onNodeWithText("Agua y luz",substring=true).performScrollTo().performClick()
         compose.onNodeWithText("Enviar prueba").performScrollTo().performClick()
         compose.waitUntil(10000) {compose.onAllNodesWithText("Revisión del último intento").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("Revisión del último intento").performScrollTo()
         screenshot("test_result")
     }
     @Test fun teacherCanReachPhotoAdministration() {
