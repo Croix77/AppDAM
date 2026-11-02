@@ -22,7 +22,8 @@ data class SchoolUiState(
     val audit: List<AuditEntry> = emptyList(), val exportedText: String? = null,
     val student: User? = null, val assignments: List<Assignment> = emptyList(), val largeText: Boolean = false,
     val activityFeedback: Map<Long,String> = emptyMap(), val lessonProgress: Map<Long,Int> = emptyMap(),
-    val testFinished: Boolean = false, val selectedSubject: String = ""
+    val testFinished: Boolean = false, val selectedSubject: String = "",
+    val assignedTeacherName: String = ""
 )
 
 class SchoolViewModel(application: Application) : AndroidViewModel(application) {
@@ -61,7 +62,8 @@ class SchoolViewModel(application: Application) : AndroidViewModel(application) 
         val lessons=repository.lessons(user.id)
         val students=if(user.role==Role.DOCENTE) repository.students(user.id) else emptyList()
         val progress=if(user.role==Role.ESTUDIANTE) lessons.associate {it.id to repository.progress(user.id,it.id)} else emptyMap()
-        _state.update { it.copy(user=user,lessons=lessons,students=students,lessonProgress=progress) }
+        val teacherName=if(user.role==Role.ESTUDIANTE) user.teacherId?.let {repository.getUser(it)?.name}.orEmpty() else ""
+        _state.update { it.copy(user=user,lessons=lessons,students=students,lessonProgress=progress,assignedTeacherName=teacherName) }
         _state.value.lesson?.id?.let { loadLessonData(it) }
     }
     fun refresh()=launchWork { refreshData() }

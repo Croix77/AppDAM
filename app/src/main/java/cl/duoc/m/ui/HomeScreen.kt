@@ -2,6 +2,7 @@ package cl.duoc.m.ui
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -10,7 +11,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,10 +33,9 @@ fun HomeScreen(
     user: User, lessons: List<Lesson>, columns: Int,
     onLesson: (Long)->Unit, onSubject: (String)->Unit,
     progress: Map<Long,Int> = emptyMap(), busy: Boolean = false,
-    onLogout: ()->Unit={}, onToggleText: ()->Unit={}, largeText: Boolean=false
+    onProfile: ()->Unit={}, largeText: Boolean=false
 ) {
     val context=LocalContext.current
-    var showSettings by rememberSaveable {mutableStateOf(false)}
     val next=lessons.firstOrNull {(progress[it.id] ?: 0) in 1..99}
         ?: lessons.firstOrNull {it.title=="La biblioteca viajera" && (progress[it.id] ?: 0)==0}
         ?: lessons.firstOrNull {(progress[it.id] ?: 0)==0} ?: lessons.firstOrNull()
@@ -46,13 +45,12 @@ fun HomeScreen(
         Column(Modifier.widthIn(max=1000.dp).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal=20.dp,vertical=16.dp),verticalArrangement=Arrangement.spacedBy(20.dp)) {
             Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) {
                 BrandLockup(Modifier.weight(1f))
-                Surface(onClick={showSettings=!showSettings},enabled=!busy,shape=CircleShape,color=Color(0xFFE6E0EF),modifier=Modifier.semantics {contentDescription="Opciones del estudiante"}) {
-                    Avatar(user.photo,user.name,size=44.dp)
+                Column(Modifier.semantics {contentDescription="Abrir mi perfil"}.clickable(enabled=!busy,onClick=onProfile).padding(4.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(4.dp)) {
+                    Surface(shape=CircleShape,color=Color(0xFFE6E0EF)) {
+                        Avatar(user.photo,user.name,size=44.dp)
+                    }
+                    Text("Mi perfil",fontSize=11.sp,color=ink)
                 }
-            }
-            if(showSettings) Row(horizontalArrangement=Arrangement.spacedBy(12.dp)) {
-                OutlinedButton(onClick=onToggleText,enabled=!busy) {Text(if(largeText) "Reducir texto" else "Aumentar texto")}
-                OutlinedButton(onClick=onLogout,enabled=!busy) {Text("Salir")}
             }
             Text("Hola, ${user.name.removePrefix("Estudiante ")}",fontSize=24.sp,lineHeight=30.sp,fontWeight=FontWeight.Bold,color=ink)
 
