@@ -6,7 +6,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.Alignment
@@ -36,9 +39,11 @@ fun Action(text: String,enabled: Boolean=true,onClick: () -> Unit) {
     Button(onClick,Modifier.fillMaxWidth().heightIn(min=52.dp),enabled=enabled,contentPadding=PaddingValues(12.dp)) { Text(text,fontSize=16.sp) }
 }
 @Composable
-fun Field(label: String,value: String,onChange: (String)->Unit,error: String?=null,singleLine: Boolean=true) {
+fun Field(label: String,value: String,onChange: (String)->Unit,error: String?=null,singleLine: Boolean=true,leadingIcon: ImageVector?=null) {
     OutlinedTextField(value,onChange,Modifier.fillMaxWidth(),label={Text(label)},singleLine=singleLine,isError=error!=null,
-        supportingText=if(error!=null) ({Text(error)}) else null,trailingIcon=if(error!=null) ({Text("!",color=MaterialTheme.colorScheme.error)}) else null)
+        leadingIcon=leadingIcon?.let {{Icon(it,contentDescription=null,tint=MaterialTheme.colorScheme.primary)}},
+        supportingText=if(error!=null) ({Text(error)}) else null,
+        trailingIcon=if(error!=null) ({Icon(Icons.Filled.Warning,contentDescription="Campo con error",tint=MaterialTheme.colorScheme.error)}) else null)
 }
 @Composable
 fun Notice(text: String,error: Boolean=false) {
