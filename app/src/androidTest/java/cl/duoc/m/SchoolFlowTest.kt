@@ -73,14 +73,31 @@ class SchoolFlowTest {
     @Test fun mathAcceptsTypedResultAndLanguageAcceptsOrderedSteps() {
         login("estudiante","Aprendo123")
         compose.waitUntil(15000) {compose.onAllNodesWithText("Bienvenido a MPAZ PRO").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("Matemática").performScrollTo().performClick()
+        compose.onNodeWithText("Una visita al huerto").assertDoesNotExist()
+        compose.onNodeWithText("Ver todas").performScrollTo().performClick()
+        compose.onNodeWithText("Una visita al huerto").assertExists()
         compose.onNodeWithText("Resolvemos en la feria").performScrollTo().performClick()
         compose.waitUntil(10000) {compose.onAllNodesWithText("1. Practicar").fetchSemanticsNodes().isNotEmpty()}
         compose.onNodeWithText("1. Practicar").performScrollTo().performClick()
+        compose.onNodeWithText("Reto 1 de 4").assertExists()
+        screenshot("math_redesign_empty")
+        compose.onAllNodesWithText("Tu respuesta numérica")[0].performScrollTo().performTextInput("45")
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
+        compose.onNodeWithText("Comprobar resultado").performScrollTo().performClick()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("Revisa tu respuesta.",substring=true).fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("Siguiente reto →").assertIsNotEnabled()
+        compose.onNodeWithText("Tu respuesta numérica").performTextClearance()
         compose.onAllNodesWithText("Tu respuesta numérica")[0].performScrollTo().performTextInput("46")
         androidx.test.espresso.Espresso.closeSoftKeyboard()
         compose.onAllNodesWithText("Comprobar resultado")[0].performScrollTo().performClick()
         compose.waitUntil(10000) {compose.onAllNodesWithText("¡Bien hecho!",substring=true).fetchSemanticsNodes().isNotEmpty()}
         screenshot("math_numeric")
+        compose.onNodeWithText("Siguiente reto →").performScrollTo().performClick()
+        compose.onNodeWithText("Reto 2 de 4").assertExists()
+        compose.onNodeWithText("← Anterior").performScrollTo().performClick()
+        compose.onNodeWithText("Reto 1 de 4").assertExists()
+        compose.onNodeWithText("46").assertExists()
         compose.onNodeWithText("←").performClick()
         compose.onNodeWithText("←").performClick()
         compose.onNodeWithText("La biblioteca viajera").performScrollTo().performClick()
