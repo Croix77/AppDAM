@@ -22,7 +22,7 @@ data class SchoolUiState(
     val audit: List<AuditEntry> = emptyList(), val exportedText: String? = null,
     val student: User? = null, val assignments: List<Assignment> = emptyList(), val largeText: Boolean = false,
     val activityFeedback: Map<Long,String> = emptyMap(), val lessonProgress: Map<Long,Int> = emptyMap(),
-    val testFinished: Boolean = false
+    val testFinished: Boolean = false, val selectedSubject: String = ""
 )
 
 class SchoolViewModel(application: Application) : AndroidViewModel(application) {
@@ -65,6 +65,7 @@ class SchoolViewModel(application: Application) : AndroidViewModel(application) 
         _state.value.lesson?.id?.let { loadLessonData(it) }
     }
     fun refresh()=launchWork { refreshData() }
+    fun selectSubject(subject: String) {if(!_state.value.busy) _state.update {it.copy(selectedSubject=subject)} }
     fun newLesson() { _state.update { it.copy(lesson=null,practice=emptyList(),test=emptyList()) } }
     fun selectStudent(id: Long)=launchWork {
         require(_state.value.user?.role==Role.DOCENTE && _state.value.students.any { it.id==id }) { "Acceso reservado al docente asignado" }

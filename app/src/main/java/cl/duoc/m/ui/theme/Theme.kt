@@ -16,9 +16,9 @@ fun MPAZPRO_GrupoTheme(
 ) {
     val size=if(largeText) 21 else 18
     MaterialTheme(colorScheme=lightColorScheme(
-        primary=Color(0xFF126B62),onPrimary=Color.White,primaryContainer=Color(0xFFC4EFE3),
-        secondary=Color(0xFF465D78),secondaryContainer=Color(0xFFE2EDF4),onSecondaryContainer=Color(0xFF18374B),
-        background=Color(0xFFF4F7F5),surface=Color.White,onBackground=Color(0xFF1D3336),onSurface=Color(0xFF1D3336),
+        primary=Color(0xFF124F54),onPrimary=Color.White,primaryContainer=Color(0xFFDCEFC5),
+        secondary=Color(0xFF7D6AA7),secondaryContainer=Color(0xFFE6E0EF),onSecondaryContainer=Color(0xFF18374B),
+        background=Color(0xFFFCFAF5),surface=Color(0xFFFFFEFB),onBackground=Color(0xFF0C3440),onSurface=Color(0xFF0C3440),
         onSurfaceVariant=Color(0xFF4C6062),outline=Color(0xFF708784)
     ),typography=Typography(
         headlineMedium=TextStyle(fontSize=28.sp,lineHeight=34.sp,fontWeight=FontWeight.Bold),

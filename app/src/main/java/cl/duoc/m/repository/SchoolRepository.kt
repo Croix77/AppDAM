@@ -133,7 +133,7 @@ class SchoolRepository(private val helper: SchoolDatabase) {
     fun reportText(actor: Long, studentId: Long, lessonId: Long): String {
         val r=report(actor,studentId,lessonId)
         return buildString {
-            appendLine("MPAZ PRO 2.º · INFORME PEDAGÓGICO DE DEMOSTRACIÓN")
+            appendLine("EXPLORA MARCELA PAZ · INFORME PEDAGÓGICO DE DEMOSTRACIÓN")
             appendLine("Datos ficticios. Reservado al docente. Emitido: ${now()}")
             appendLine("${r.student.name} · ${r.student.course}\n${r.lesson.subject}: ${r.lesson.title}\nObjetivo: ${r.lesson.objective}\nAvance: ${r.progress}%")
             r.attempts.forEach { appendLine("Intento ${it.number}: ${it.score}/${it.total}, ${it.date}") }
