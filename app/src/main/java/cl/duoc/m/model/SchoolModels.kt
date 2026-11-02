@@ -9,7 +9,8 @@ data class Lesson(
     val explanation: String, val example: String, val status: UnitStatus,
     val origin: String = "Contenido original de demostración; validar OA con el docente"
 )
-data class Question(val id: Long, val lessonId: Long, val prompt: String, val options: List<String>, val correct: Int, val explanation: String, val finalTest: Boolean)
+enum class ActivityKind { SELECCION, NUMERO, ORDEN }
+data class Question(val id: Long, val lessonId: Long, val prompt: String, val options: List<String>, val correct: Int, val explanation: String, val finalTest: Boolean, val kind: ActivityKind = ActivityKind.SELECCION)
 data class Assignment(val studentId: Long, val lessonId: Long, val maxAttempts: Int, val start: String, val end: String)
 data class Answer(val questionId: Long, val choice: Int, val correct: Boolean)
 data class Attempt(val id: Long, val studentId: Long, val lessonId: Long, val number: Int, val score: Int, val total: Int, val date: String)
@@ -17,6 +18,14 @@ data class Report(val student: User, val lesson: Lesson, val attempts: List<Atte
 data class AuditEntry(val date: String, val actor: String, val action: String)
 
 object FormRules {
+    fun activityResponse(question: Question, response: String): Boolean {
+        val expected = question.options[question.correct]
+        return when (question.kind) {
+            ActivityKind.NUMERO -> response.trim().toIntOrNull()?.let { it == expected.toIntOrNull() } ?: false
+            ActivityKind.ORDEN -> response == expected
+            ActivityKind.SELECCION -> false
+        }
+    }
     fun login(username: String, password: String): Map<String, String> = buildMap {
         if (username.isBlank()) put("username", "Escribe tu usuario")
         if (password.isBlank()) put("password", "Escribe tu clave")

@@ -36,7 +36,7 @@ fun SchoolApp(columns: Int,vm: SchoolViewModel=viewModel()) {
                             else StaffHome(s,{vm.selectStudent(it);nav.navigate("student")},{vm.selectLesson(it);nav.navigate("editor")},{vm.newLesson();nav.navigate("editor")},{vm.loadAudit();nav.navigate("audit")})
                         }
                         composable("lesson") { if(user.role==Role.ESTUDIANTE) s.lesson?.let { LessonScreen(s,{nav.navigate("practice")},{vm.startTest();nav.navigate("test")}) } }
-                        composable("practice") { if(user.role==Role.ESTUDIANTE) PracticeScreen(s,vm::answerPractice) }
+                        composable("practice") { if(user.role==Role.ESTUDIANTE) PracticeScreen(s,vm::answerPractice,vm::submitActivity) }
                         composable("test") { if(user.role==Role.ESTUDIANTE) TestScreen(s,vm::choose,vm::submitTest) }
                         composable("student") { if(user.role==Role.DOCENTE) StudentManagement(s,vm,{student,lesson -> vm.loadReport(student,lesson);nav.navigate("report")},{nav.navigate("photo")}) }
                         composable("report") { if(user.role==Role.DOCENTE) ReportScreen(s,vm,vm::exportReport) }

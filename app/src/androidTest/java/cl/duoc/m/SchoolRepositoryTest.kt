@@ -17,7 +17,8 @@ class SchoolRepositoryTest {
         assertEquals(Role.ESTUDIANTE,repo.login("estudiante","Aprendo123")!!.role)
         assertNull(repo.login("estudiante","incorrecta"))
         assertNull(repo.login("' OR 1=1 --","Aprendo123"))
-        assertEquals(4,repo.lessons(3).size)
+        assertEquals(4,repo.lessons(3).map {it.subject}.distinct().size)
+        assertEquals(8,repo.lessons(3).size)
         assertEquals(2,repo.students(2).size)
     }
     @Test fun accessControlProtectsReportsAssignmentsAndPhotos() {
@@ -62,6 +63,30 @@ class SchoolRepositoryTest {
         assertTrue(report.validated)
         assertTrue(repo.reportText(2,3,1).contains("Reforzar lectura"))
         forbidden {repo.reportText(3,3,1)}
+    }
+    @Test fun upgradedDatabasePreservesEarlierAnswersAndAttempts() {
+        val name="upgrade_test.db"
+        context.deleteDatabase(name)
+        val legacy=android.database.sqlite.SQLiteDatabase.openOrCreateDatabase(context.getDatabasePath(name),null)
+        try {
+            val testContext=InstrumentationRegistry.getInstrumentation().context
+            testContext.assets.open("legacy_v1.sql").bufferedReader().use {it.readText()}.split(';').filter {it.isNotBlank()}.forEach {legacy.execSQL(it)}
+            listOf(1,2,3,4).forEach {id -> legacy.execSQL("INSERT INTO users(id,username,name,role,course,teacher_id,salt,password) VALUES(?,?,?,?,?,?,?,?)",arrayOf(id,"test$id","Test $id",if(id<3) "DOCENTE" else "ESTUDIANTE","2A",if(id>2) 2 else null,"salt","hash"))}
+            SeedContent.insert(legacy)
+            legacy.execSQL("INSERT INTO practice VALUES(3,1,0,1,'2026-01-01 10:00:00')")
+            legacy.execSQL("INSERT INTO attempts VALUES(1,3,1,1,2,2,'2026-01-01 10:01:00')")
+            legacy.execSQL("INSERT INTO test_answers VALUES(1,3,2,1)")
+            legacy.version=1
+        } finally {legacy.close()}
+        val upgraded=SchoolDatabase(context,name)
+        try {
+            val migrated=SchoolRepository(upgraded)
+            assertEquals(1,migrated.attempts(3,1).size)
+            assertEquals(1,migrated.practice(3,1).size)
+            assertEquals(8,migrated.lessons(3).size)
+            val math=migrated.lessons(3).first {it.title=="Resolvemos en la feria"}
+            assertEquals(4,migrated.questions(math.id,false).count {it.kind==ActivityKind.NUMERO})
+        } finally {upgraded.close();context.deleteDatabase(name)}
     }
     @Test fun closedDatesRejectPracticeAndIncompleteTestsDoNotConsumeAttempts() {
         repo.assign(2,3,1,2,"2020-01-01","2020-12-31")

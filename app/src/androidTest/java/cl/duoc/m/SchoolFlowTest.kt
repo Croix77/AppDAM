@@ -70,4 +70,25 @@ class SchoolFlowTest {
         compose.waitUntil(10000) {compose.onAllNodesWithText("Pasar a deshabilitado").fetchSemanticsNodes().isNotEmpty()}
         screenshot("utp_unit")
     }
+    @Test fun mathAcceptsTypedResultAndLanguageAcceptsOrderedSteps() {
+        login("estudiante","Aprendo123")
+        compose.waitUntil(15000) {compose.onAllNodesWithText("Bienvenido a MPAZ PRO").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("Resolvemos en la feria").performScrollTo().performClick()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("1. Practicar").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("1. Practicar").performScrollTo().performClick()
+        compose.onAllNodesWithText("Tu respuesta numérica")[0].performScrollTo().performTextInput("46")
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
+        compose.onAllNodesWithText("Comprobar resultado")[0].performScrollTo().performClick()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("¡Bien hecho!",substring=true).fetchSemanticsNodes().isNotEmpty()}
+        screenshot("math_numeric")
+        compose.onNodeWithText("←").performClick()
+        compose.onNodeWithText("←").performClick()
+        compose.onNodeWithText("La biblioteca viajera").performScrollTo().performClick()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("1. Practicar").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("1. Practicar").performScrollTo().performClick()
+        listOf("Limpió el estante","Ordenó los libros","Preparó la lista").forEach {compose.onNodeWithText(it).performScrollTo().performClick()}
+        compose.onNodeWithText("Comprobar orden").performScrollTo().performClick()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("¡Bien hecho!",substring=true).fetchSemanticsNodes().isNotEmpty()}
+        screenshot("language_order")
+    }
 }

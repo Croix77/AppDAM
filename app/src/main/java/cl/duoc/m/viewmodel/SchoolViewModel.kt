@@ -20,7 +20,8 @@ data class SchoolUiState(
     val unavailable: String? = null, val progress: Int = 0, val choices: Map<Long,Int> = emptyMap(),
     val review: List<Pair<Question,Answer>> = emptyList(), val report: Report? = null,
     val audit: List<AuditEntry> = emptyList(), val exportedText: String? = null,
-    val student: User? = null, val assignments: List<Assignment> = emptyList(), val largeText: Boolean = false
+    val student: User? = null, val assignments: List<Assignment> = emptyList(), val largeText: Boolean = false,
+    val activityFeedback: Map<Long,String> = emptyMap()
 )
 
 class SchoolViewModel(application: Application) : AndroidViewModel(application) {
@@ -67,7 +68,7 @@ class SchoolViewModel(application: Application) : AndroidViewModel(application) 
         require(_state.value.user?.role==Role.DOCENTE && _state.value.students.any { it.id==id }) { "Acceso reservado al docente asignado" }
         _state.update { it.copy(student=repository.getUser(id),assignments=it.lessons.mapNotNull { l -> repository.assignment(id,l.id) }) }
     }
-    fun selectLesson(id: Long)=launchWork { _state.update { it.copy(choices=emptyMap(),report=null) }; loadLessonData(id) }
+    fun selectLesson(id: Long)=launchWork { _state.update { it.copy(choices=emptyMap(),report=null,activityFeedback=emptyMap()) }; loadLessonData(id) }
     private fun loadLessonData(id: Long) {
         val user=_state.value.user ?: return
         val lesson=repository.getLesson(id)
@@ -80,6 +81,17 @@ class SchoolViewModel(application: Application) : AndroidViewModel(application) 
         val id=_state.value.lesson?.id ?: return@launchWork
         repository.savePractice(actor(),id,questionId,choice)
         loadLessonData(id)
+    }
+    fun submitActivity(questionId: Long,response: String)=launchWork {
+        val s=_state.value
+        val q=s.practice.firstOrNull {it.id==questionId} ?: error("Actividad no encontrada")
+        if(FormRules.activityResponse(q,response)) {
+            repository.savePractice(actor(),q.lessonId,q.id,q.correct)
+            _state.update {it.copy(activityFeedback=it.activityFeedback-questionId)}
+            loadLessonData(q.lessonId)
+        } else {
+            _state.update {it.copy(activityFeedback=it.activityFeedback+(questionId to "Revisa tu respuesta. ${q.explanation}"))}
+        }
     }
     fun choose(questionId: Long,choice: Int) { if(!_state.value.busy) _state.update { it.copy(choices=it.choices+(questionId to choice)) } }
     fun startTest() { if(!_state.value.busy) _state.update { it.copy(choices=emptyMap()) } }

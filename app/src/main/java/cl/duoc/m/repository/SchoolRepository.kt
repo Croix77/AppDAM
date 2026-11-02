@@ -17,7 +17,7 @@ class SchoolRepository(private val helper: SchoolDatabase) {
     private fun <T> rows(sql: String, args: Array<String> = emptyArray(), read: (Cursor) -> T): List<T> = db.rawQuery(sql,args).use { c -> buildList { while(c.moveToNext()) add(read(c)) } }
     private fun user(c: Cursor) = User(c.num("id"),c.str("username"),c.str("name"),Role.valueOf(c.str("role")),c.str("course"),c.str("teacher_id").toLongOrNull(),c.str("photo"))
     private fun lesson(c: Cursor) = Lesson(c.num("id"),c.str("subject"),c.str("title"),c.str("objective"),c.str("explanation"),c.str("example"),UnitStatus.valueOf(c.str("status")),c.str("origin"))
-    private fun question(c: Cursor) = Question(c.num("id"),c.num("lesson_id"),c.str("prompt"),listOf(c.str("a"),c.str("b"),c.str("c")),c.num("correct").toInt(),c.str("explanation"),c.num("final_test")==1L)
+    private fun question(c: Cursor) = Question(c.num("id"),c.num("lesson_id"),c.str("prompt"),listOf(c.str("a"),c.str("b"),c.str("c")),c.num("correct").toInt(),c.str("explanation"),c.num("final_test")==1L,ActivityKind.valueOf(c.str("kind")))
     private fun attempt(c: Cursor) = Attempt(c.num("id"),c.num("student_id"),c.num("lesson_id"),c.num("number").toInt(),c.num("score").toInt(),c.num("total").toInt(),c.str("date"))
     private fun role(id: Long) = getUser(id)?.role ?: error("Usuario no encontrado")
     private fun requireRole(id: Long, expected: Role) { require(role(id) == expected) { "No tienes permiso para esta acción" } }
