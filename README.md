@@ -39,6 +39,7 @@ Estas credenciales son públicas únicamente para la demostración. No usar nomb
 ## Funcionalidades
 
 - Login con validaciones por campo, contraseña oculta y navegación por rol.
+- Mi perfil para estudiante, docente y UTP: datos ficticios de la cuenta, curso o área de trabajo, imagen y ajustes de lectura/sesión. El estudiante consulta además su docente y asignaturas asignadas; no puede editar su foto ni abrir informes pedagógicos desde este perfil.
 - Inicio con la identidad Explora Marcela Paz, logo de libro/camino/estrella, tarjeta ilustrada y cuatro accesos por asignatura. Contiene ocho unidades y 42 preguntas. Las unidades se muestran al abrir su asignatura; la tarjeta principal permite continuar una unidad real.
 - Nuevas prácticas: ordenar hechos de un relato, escribir resultados numéricos, secuenciar una experiencia científica e interpretar un plano de comunidad. Las pruebas finales usan selección de alternativas.
 - Explicaciones y ejemplos originales, ilustración vectorial propia e instrucciones de audio empaquetadas. Los objetivos son descripciones de demostración, no códigos OA oficiales certificados.

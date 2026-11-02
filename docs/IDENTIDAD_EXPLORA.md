@@ -8,7 +8,7 @@ El nombre visible de la aplicación es Explora Marcela Paz, con el lema Aprende 
 - Saludo breve y tarjeta verde con el título Tu próximo descubrimiento, unidad recomendada real, ilustración de libro/camino y botón Continuar aprendiendo.
 - Cuatro accesos pastel: libro violeta, operaciones azules, hojas verdes y globo terracota. Al tocar uno se abre su lista de unidades con los estados reales de progreso.
 - Pie con confirmación de guardado automático. El guardado continúa siendo local, sin sincronización de nube.
-- Al pulsar el avatar se muestran los controles de tamaño de texto y Salir. No permite editar la imagen del estudiante.
+- Al pulsar el avatar o su etiqueta Mi perfil se abre el perfil propio con información escolar, controles de tamaño de texto y Salir. No permite editar la imagen del estudiante. Docente y UTP también disponen de un perfil propio, descrito en PERFILES_DE_CUENTA.md.
 - Nombre de Android, icono del lanzador, entrada, audio e informes con la nueva identidad. Se retiró el recurso anterior logo_mpaz.png.
 
 Se conserva el applicationId cl.duoc.m, la base de datos y los identificadores existentes para que actualizar la aplicación no borre el progreso. La prueba automatizada usa un identificador separado.

@@ -11,7 +11,9 @@ import java.io.File
 class SchoolFlowTest {
     @get:Rule val compose=createAndroidComposeRule<MainActivity>()
     private fun login(user: String,password: String) {
+        compose.onNodeWithText("Usuario").performTextClearance()
         compose.onNodeWithText("Usuario").performTextInput(user)
+        compose.onNodeWithText("Clave").performTextClearance()
         compose.onNodeWithText("Clave").performTextInput(password)
         compose.onNodeWithText("Entrar").performScrollTo().performClick()
     }
@@ -82,17 +84,41 @@ class SchoolFlowTest {
         compose.onNodeWithText("Elegir desde galería").performScrollTo().assertIsEnabled()
         compose.onNodeWithText("Tomar foto de prueba").performScrollTo().assertIsEnabled()
         screenshot("photo_teacher")
+        compose.onNodeWithText("Volver").performClick()
+        compose.onNodeWithText("Volver").performClick()
+        compose.onNodeWithText("Mi perfil").performClick()
+        compose.onNodeWithText("Docente de prueba").assertExists()
+        compose.onNodeWithText("Curso a cargo").assertExists()
+        compose.onNodeWithText("Estudiante Luna").assertDoesNotExist()
+        screenshot("profile_teacher")
     }
     @Test fun newHomeKeepsReadingSettingsAndLogoutAccessible() {
         login("estudiante","Aprendo123")
         compose.waitUntil(15000) {compose.onAllNodesWithText("¿Qué exploramos?").fetchSemanticsNodes().isNotEmpty()}
-        compose.onNodeWithContentDescription("Opciones del estudiante").performClick()
-        compose.onNodeWithText("Aumentar texto").performClick()
+        compose.onNodeWithContentDescription("Abrir mi perfil").performClick()
+        compose.onNodeWithText("Mi perfil").assertExists()
+        compose.onNodeWithText("EST-003").assertExists()
+        compose.onNodeWithText("2.º Básico A").assertExists()
+        compose.onNodeWithText("Docente de prueba").assertExists()
+        compose.onNodeWithText("Administrar imagen del estudiante").assertDoesNotExist()
+        compose.onNodeWithText("Consultar informe pedagógico").assertDoesNotExist()
+        screenshot("profile_student")
+        compose.onNodeWithText("Aumentar texto").performScrollTo().performClick()
         compose.waitUntil(10000) {compose.onAllNodesWithText("Reducir texto").fetchSemanticsNodes().isNotEmpty()}
-        compose.onNodeWithText("Reducir texto").performClick()
+        compose.onNodeWithText("Reducir texto").performScrollTo().performClick()
         compose.waitUntil(10000) {compose.onAllNodesWithText("Aumentar texto").fetchSemanticsNodes().isNotEmpty()}
-        compose.onNodeWithText("Salir").assertIsEnabled().performClick()
+        compose.onNodeWithText("Salir").performScrollTo().assertIsEnabled().performClick()
         compose.onNodeWithText("Entrar").assertExists()
+    }
+    @Test fun utpCanOpenItsOwnAccountProfile() {
+        login("utp","Utp12345")
+        compose.waitUntil(15000) {compose.onAllNodesWithText("Gestión pedagógica").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("Mi perfil").performClick()
+        compose.onNodeWithText("Coordinación UTP").assertExists()
+        compose.onNodeWithText("CTA-001").assertExists()
+        compose.onNodeWithText("Área de trabajo").assertExists()
+        compose.onNodeWithText("Consultar informe pedagógico").assertDoesNotExist()
+        screenshot("profile_utp")
     }
     @Test fun utpCanSeeReviewWorkflow() {
         login("utp","Utp12345")

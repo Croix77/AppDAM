@@ -52,3 +52,11 @@ La aplicación no implementa sincronización remota ni backend. Las pruebas no c
 - El nombre visible, icono, acceso, audio e informes utilizan Explora Marcela Paz. Se conserva el applicationId y el esquema SQLite para actualizar la instalación habitual sin borrar los datos.
 - Las pruebas se ejecutaron en cl.duoc.m.validation; no reemplazaron la instalación que contiene el examen del usuario.
 - Después de instalar el APK normal actualizado, se compararon las tablas de práctica, intentos y respuestas con la copia previa: idénticas. El examen del usuario se conservó y se abrió el nuevo inicio en la instalación habitual.
+
+## Perfiles propios
+
+- Catorce pruebas de emulador, cinco unitarias y lint correctos.
+- Se verificó el perfil de estudiante (curso, docente, ID ficticio y restricciones), docente (cuenta propia aun tras seleccionar un alumno) y UTP (área pedagógica).
+- Se comprobaron los ajustes de texto y la salida de sesión desde la nueva pantalla de perfil.
+- Los perfiles son de consulta; no modifican las cuentas ni agregan tablas SQLite. Las pruebas continuaron usando el identificador aislado de validación.
+- Tras actualizar la instalación habitual se abrió Mi perfil del estudiante y se compararon sus registros de aprendizaje con la copia anterior: respuestas e intentos conservados.
