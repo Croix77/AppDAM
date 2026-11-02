@@ -26,7 +26,8 @@ import java.io.File
 
 @Composable
 fun Avatar(path: String,name: String,modifier: Modifier=Modifier) {
-    val bitmap by produceState<android.graphics.Bitmap?>(null,path) { value=withContext(Dispatchers.IO) {if(path.isBlank()) null else MediaFiles.decode(path)} }
+    var bitmap by remember(path) {mutableStateOf<android.graphics.Bitmap?>(null)}
+    LaunchedEffect(path) {bitmap=withContext(Dispatchers.IO) {if(path.isBlank()) null else MediaFiles.decode(path)}}
     if(bitmap!=null) Image(bitmap!!.asImageBitmap(),"Imagen de $name",modifier.size(112.dp).clip(CircleShape),contentScale=ContentScale.Crop)
     else Surface(modifier.size(112.dp),shape=CircleShape,color=MaterialTheme.colorScheme.secondaryContainer) {Box(contentAlignment=androidx.compose.ui.Alignment.Center) {Text(name.takeLast(3).uppercase(),style=MaterialTheme.typography.headlineMedium)}}
 }

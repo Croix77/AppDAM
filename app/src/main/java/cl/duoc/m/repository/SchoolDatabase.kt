@@ -44,8 +44,8 @@ class SchoolDatabase(context: Context, name: String = "mpaz_school.db") : SQLite
 object Passwords {
     fun salt(): String = ByteArray(16).also { SecureRandom().nextBytes(it) }.joinToString("") { "%02x".format(it) }
     fun hash(password: String, salt: String): String {
-        val spec = javax.crypto.spec.PBEKeySpec(password.toCharArray(), salt.toByteArray(), 20000, 256)
-        return try { javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(spec).encoded.joinToString("") { "%02x".format(it) } } finally { spec.clearPassword() }
+        val text = (salt + password).toByteArray()
+        return MessageDigest.getInstance("SHA-256").digest(text).joinToString("") { "%02x".format(it) }
     }
-    fun matches(password: String, salt: String, expected: String): Boolean = MessageDigest.isEqual(hash(password, salt).toByteArray(), expected.toByteArray())
+    fun matches(password: String, salt: String, expected: String): Boolean = hash(password, salt) == expected
 }
