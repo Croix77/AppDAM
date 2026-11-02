@@ -12,9 +12,7 @@ import java.time.LocalDate
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.platform.LocalContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
 fun StaffHome(s: SchoolUiState,onStudent: (Long)->Unit,onEdit: (Long)->Unit,onNew: ()->Unit,onAudit: ()->Unit) {
@@ -78,7 +76,7 @@ fun ReportScreen(s: SchoolUiState,vm: SchoolViewModel,onExport: ()->Unit) {
     val saveFile=rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri ->
         if(uri!=null) scope.launch {
             try {
-                withContext(Dispatchers.IO) {requireNotNull(context.contentResolver.openOutputStream(uri)).bufferedWriter(Charsets.UTF_8).use {it.write(export)}}
+                requireNotNull(context.contentResolver.openOutputStream(uri)).bufferedWriter(Charsets.UTF_8).use {it.write(export)}
                 vm.showMessage("Informe descargado")
             } catch (_: Exception) {vm.showMessage("No pudimos guardar el informe. Elige otra ubicación.")}
             finally {export=""}
