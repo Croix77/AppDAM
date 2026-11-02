@@ -38,7 +38,11 @@ fun LessonScreen(s: SchoolUiState,onPractice: ()->Unit,onTest: ()->Unit) {
     }
 }
 @Composable
-fun PracticeScreen(s: SchoolUiState,onAnswer: (Long,Int)->Unit,onActivity: (Long,String)->Unit) {
+fun PracticeScreen(s: SchoolUiState,onAnswer: (Long,Int)->Unit,onActivity: (Long,String)->Unit,onBackToLesson: ()->Unit={}) {
+    if(s.lesson?.title=="Resolvemos en la feria" && s.practice.isNotEmpty() && s.practice.all {it.kind==ActivityKind.NUMERO}) {
+        MathPracticeScreen(s,onActivity,onBackToLesson)
+        return
+    }
     Page("Practica a tu ritmo","Puedes volver a intentarlo. Lee cada explicación.") {
         s.unavailable?.let { Notice(it,true) }
         var showContext by rememberSaveable(s.lesson?.id) {mutableStateOf(false)}
