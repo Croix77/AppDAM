@@ -37,7 +37,8 @@ Estas credenciales son públicas únicamente para la demostración. No usar nomb
 ## Funcionalidades
 
 - Login con validaciones por campo, contraseña oculta y navegación por rol.
-- Inicio que conserva bienvenida, logo y Toast de Comenzar; cuatro asignaturas con una unidad y cuatro preguntas por unidad: dos de práctica y dos de prueba.
+- Inicio que conserva bienvenida, logo y Toast de Comenzar; cuatro asignaturas y ocho unidades: las cuatro originales y cuatro nuevas unidades específicas por asignatura (42 preguntas en total).
+- Nuevas prácticas: ordenar hechos de un relato, escribir resultados numéricos, secuenciar una experiencia científica e interpretar un plano de comunidad. Las pruebas finales usan selección de alternativas.
 - Explicaciones y ejemplos originales, ilustración vectorial propia e instrucciones de audio empaquetadas. Los objetivos son descripciones de demostración, no códigos OA oficiales certificados.
 - Práctica con retroalimentación, progreso SQLite y prueba final habilitada al completar correctamente la práctica.
 - Disponibilidad e intentos configurables por docente. Cada envío completo consume un intento; salir sin enviar no lo consume. Transacción SQLite para guardar intento y respuestas conjuntamente.

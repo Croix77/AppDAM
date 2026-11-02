@@ -21,7 +21,7 @@
 - Se mantiene Segundo Básico y se utiliza una presentación legible para usuarios de 12 años, según lo acordado.
 - Los OA son descriptivos de demostración: el material no incluye la selección oficial validada que menciona el anexo del caso. No se inventan códigos curriculares ni se certifica alineación Mineduc.
 - Audio general de instrucciones; no narración de cada explicación ni lector de pantalla propio.
-- Preguntas de selección simples. La edición no borra preguntas con respuestas históricas; se agregan preguntas a borradores.
+- Prácticas de selección, respuesta numérica y orden de pasos; las pruebas finales se mantienen con selección de alternativas. UTP puede agregar nuevas preguntas de selección. Las otras modalidades vienen en las unidades preparadas. La edición no borra preguntas con respuestas históricas.
 - Imágenes de apoyo: logo conservado, ilustración propia de libro/planta y avatar administrado. No hay gestor multimedia UTP de audios/imágenes arbitrarias.
 - Una cuenta UTP y una docente de prueba; dos estudiantes. Sin altas institucionales ni sincronización remota. Backend REST no implementado por quedar fuera de las guías y del alcance local acordado.
 - No se generan diagnósticos ni recomendaciones por IA. El informe es descriptivo y el docente interpreta los datos.

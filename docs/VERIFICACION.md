@@ -27,3 +27,10 @@ Las primeras ampliaciones de la prueba de UI fallaron por buscar el texto exacto
 - Firma release bajo control del equipo. El APK entregado es debug, apto para pruebas.
 
 La aplicación no implementa sincronización remota ni backend. Las pruebas no certifican seguridad de producción ni equivalencia completa con el sistema institucional descrito como evolución del caso.
+
+## Ampliación de actividades por asignatura
+
+- Ocho unidades y 42 preguntas totales; cuatro unidades nuevas con 14 prácticas y 12 preguntas de prueba.
+- Cinco pruebas unitarias aprobadas, incluyendo validación numérica y orden de pasos.
+- Doce pruebas en emulador aprobadas, incluyendo escritura de resultado numérico, orden de un relato y migración real desde el esquema SQLite v1 sin perder respuestas/intent os.
+- Compilación y lint correctos. Las comprobaciones anteriores de tamaños y recursos nativos corresponden a la entrega base; la ampliación se ejecutó en el tamaño compacto del mismo Pixel 3a.

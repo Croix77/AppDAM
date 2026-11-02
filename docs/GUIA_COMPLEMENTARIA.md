@@ -14,7 +14,9 @@ Ejercicio: cambiar el texto de retroalimentación sin modificar el repositorio. 
 
 La guía 12 enseña DataStore para una preferencia. No enseña tablas relacionales. SQLite permite relacionar estudiante, unidad, pregunta, respuesta e intento, y está contemplado en el caso. Se utiliza `SQLiteOpenHelper` directamente para evitar incorporar Room y procesadores de código no desarrollados en las guías.
 
-`SchoolDatabase.onCreate` crea las tablas al abrir una base nueva. `SeedContent.insert` carga cuatro unidades originales y asignaciones de prueba. Volver a abrir una base existente no vuelve a cargar las semillas ni elimina el progreso. `onUpgrade` no destruye datos: una nueva versión requerirá una migración explícita.
+`SchoolDatabase.onCreate` crea las tablas al abrir una base nueva. `SeedContent.insert` carga cuatro unidades originales y `SubjectActivities.insert` añade otras cuatro con formatos propios de cada asignatura. Volver a abrir una base existente no vuelve a cargar las semillas ni elimina el progreso. La migración de versión 1 a 2 agrega la columna kind con ALTER TABLE e inserta las unidades nuevas sin borrar el historial. Una futura versión necesitará su propia migración explícita.
+
+La implementación y el propósito de las nuevas actividades se explican en ACTIVIDADES_POR_ASIGNATURA.md. Los ejercicios numéricos utilizan TextField y los de secuencia botones con estado guardable; su validación se mantiene en la lógica. No requieren técnicas de arrastrar/soltar ni nuevas dependencias.
 
 Tablas:
 
