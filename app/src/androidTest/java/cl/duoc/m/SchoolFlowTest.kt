@@ -16,6 +16,7 @@ class SchoolFlowTest {
         compose.onNodeWithText("Entrar").performScrollTo().performClick()
     }
     private fun screenshot(name: String) {
+        compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         val context=InstrumentationRegistry.getInstrumentation().targetContext
         val values=android.content.ContentValues().apply {
@@ -35,22 +36,41 @@ class SchoolFlowTest {
         compose.waitUntil(10000) {compose.onAllNodesWithText("Lee y descubre").fetchSemanticsNodes().isNotEmpty()}
         screenshot("lesson")
         compose.onNodeWithText("1. Practicar").performScrollTo().performClick()
+        compose.onNodeWithText("Actividad 1 de 2").assertExists()
         compose.onNodeWithText("En el huerto").performScrollTo().performClick()
         compose.waitUntil(10000) {compose.onAllNodesWithText("¡Bien hecho!",substring=true).fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("Siguiente actividad").performScrollTo().performClick()
+        compose.onNodeWithText("Actividad 2 de 2").assertExists()
         compose.onNodeWithText("Regó una lechuga").performScrollTo().performClick()
-        compose.waitUntil(10000) {compose.onAllNodesWithText("¡Bien hecho!",substring=true).fetchSemanticsNodes().size==2}
-        compose.onNodeWithText("←").performClick()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("¡Práctica terminada!").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("✓ 2/2 actividades completadas").assertExists()
+        screenshot("practice_completed")
+        compose.onNodeWithText("Volver a la unidad").performScrollTo().performClick()
         compose.waitUntil(10000) {compose.onAllNodesWithText("Tu avance: 66%").fetchSemanticsNodes().isNotEmpty()}
         compose.onNodeWithText("2. Prueba final",substring=true).performScrollTo().assertIsEnabled().performClick()
         compose.waitUntil(10000) {compose.onAllNodesWithText("Comprueba lo aprendido").fetchSemanticsNodes().isNotEmpty()}
         compose.waitForIdle()
         screenshot("test_before")
-        compose.onNodeWithText("Rojos",substring=true).performScrollTo().performClick()
+        compose.onNodeWithText("Pregunta 1 de 2").assertExists()
+        compose.onNodeWithText("Azules",substring=true).performScrollTo().performClick()
+        compose.onNodeWithText("Siguiente pregunta").performScrollTo().performClick()
+        compose.onNodeWithText("Pregunta 2 de 2").assertExists()
         compose.onNodeWithText("Agua y luz",substring=true).performScrollTo().performClick()
         compose.onNodeWithText("Enviar prueba").performScrollTo().performClick()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("¡Prueba terminada!").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("✓ Preguntas respondidas: 2/2").assertExists()
+        compose.onNodeWithText("Respuestas correctas: 1/2").assertExists()
+        compose.onNodeWithText("Enviar prueba").assertDoesNotExist()
+        screenshot("test_completed")
         compose.waitUntil(10000) {compose.onAllNodesWithText("Revisión del último intento").fetchSemanticsNodes().isNotEmpty()}
         compose.onNodeWithText("Revisión del último intento").performScrollTo()
         screenshot("test_result")
+        compose.onNodeWithText("Volver a la unidad").performScrollTo().performClick()
+        compose.onNodeWithText("Ver último resultado").performScrollTo().performClick()
+        compose.onNodeWithText("Respuestas correctas: 1/2").assertExists()
+        compose.onNodeWithText("Iniciar otro intento").performScrollTo().performClick()
+        compose.onNodeWithText("Pregunta 1 de 2").assertExists()
+        compose.onNodeWithText("Respondidas: 0/2").assertExists()
     }
     @Test fun teacherCanReachPhotoAdministration() {
         login("docente","Profe123")
@@ -98,8 +118,19 @@ class SchoolFlowTest {
         compose.onNodeWithText("← Anterior").performScrollTo().performClick()
         compose.onNodeWithText("Reto 1 de 4").assertExists()
         compose.onNodeWithText("46").assertExists()
-        compose.onNodeWithText("←").performClick()
-        compose.onNodeWithText("←").performClick()
+        listOf("39","32","35").forEach {result ->
+            compose.onNodeWithText("Siguiente reto →").performScrollTo().performClick()
+            compose.onNodeWithText("Tu respuesta numérica").performScrollTo().performTextInput(result)
+            androidx.test.espresso.Espresso.closeSoftKeyboard()
+            compose.onNodeWithText("Comprobar resultado").performScrollTo().performClick()
+            compose.waitUntil(10000) {compose.onAllNodesWithText("¡Bien hecho!",substring=true).fetchSemanticsNodes().isNotEmpty() || compose.onAllNodesWithText("¡Práctica terminada!").fetchSemanticsNodes().isNotEmpty()}
+        }
+        compose.onNodeWithText("✓ 4/4 actividades completadas").assertExists()
+        screenshot("math_completed")
+        compose.onNodeWithText("Revisar actividades").performScrollTo().performClick()
+        compose.onNodeWithText("Reto 1 de 4").assertExists()
+        compose.onNodeWithText("Volver").performClick()
+        compose.onNodeWithText("Volver").performClick()
         compose.onNodeWithText("La biblioteca viajera").performScrollTo().performClick()
         compose.waitUntil(10000) {compose.onAllNodesWithText("1. Practicar").fetchSemanticsNodes().isNotEmpty()}
         compose.onNodeWithText("1. Practicar").performScrollTo().performClick()

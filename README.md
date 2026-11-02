@@ -17,11 +17,13 @@ $env:JAVA_HOME = 'C:\Program Files\Android\Android Studio\jbr'
 $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 .\gradlew.bat assembleDebug
 .\gradlew.bat testDebugUnitTest
-.\gradlew.bat connectedDebugAndroidTest
+.\gradlew.bat connectedDebugAndroidTest -PmpazIsolatedTests=true
 .\gradlew.bat lintDebug
 ```
 
 El APK debug se genera en `app/build/outputs/apk/debug/app-debug.apk`. No confundirlo con un APK release firmado para entrega: ese requiere la clave privada del equipo, que nunca debe subirse al repositorio.
+
+Las pruebas con `mpazIsolatedTests=true` utilizan el paquete `cl.duoc.m.validation`, separado de la instalación habitual, para proteger el progreso guardado por el usuario. Después de probar, ejecutar `assembleDebug` sin ese parámetro antes de distribuir el APK normal.
 
 ## Cuentas ficticias
 
@@ -41,6 +43,8 @@ Estas credenciales son públicas únicamente para la demostración. No usar nomb
 - Nuevas prácticas: ordenar hechos de un relato, escribir resultados numéricos, secuenciar una experiencia científica e interpretar un plano de comunidad. Las pruebas finales usan selección de alternativas.
 - Explicaciones y ejemplos originales, ilustración vectorial propia e instrucciones de audio empaquetadas. Los objetivos son descripciones de demostración, no códigos OA oficiales certificados.
 - Práctica con retroalimentación, progreso SQLite y prueba final habilitada al completar correctamente la práctica.
+- Actividades y pruebas muestran su posición (por ejemplo, 1 de 3) y el número completado/respondido. Al terminar se abre una confirmación con el avance guardado. El resultado del examen distingue preguntas respondidas de respuestas correctas y puede consultarse de nuevo sin gastar intentos.
+- Botón superior Volver con texto y acciones Volver a la unidad al finalizar.
 - Disponibilidad e intentos configurables por docente. Cada envío completo consume un intento; salir sin enviar no lo consume. Transacción SQLite para guardar intento y respuestas conjuntamente.
 - Estudiante ve sus propios resultados, sin informes pedagógicos ni edición de imágenes.
 - Docente administra sus estudiantes, asigna unidades autorizadas, consulta informes por objetivo/unidad, guarda y valida observaciones y descarga un informe TXT.

@@ -11,7 +11,9 @@ android {
     }
 
     defaultConfig {
-        applicationId = "cl.duoc.m"
+        // La variante de comprobación se instala como otra app y no borra el avance del usuario.
+        applicationId = if (providers.gradleProperty("mpazIsolatedTests").orNull == "true")
+            "cl.duoc.m.validation" else "cl.duoc.m"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

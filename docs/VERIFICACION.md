@@ -34,3 +34,12 @@ La aplicación no implementa sincronización remota ni backend. Las pruebas no c
 - Cinco pruebas unitarias aprobadas, incluyendo validación numérica y orden de pasos.
 - Doce pruebas en emulador aprobadas, incluyendo escritura de resultado numérico, orden de un relato y migración real desde el esquema SQLite v1 sin perder respuestas/intent os.
 - Compilación y lint correctos. Las comprobaciones anteriores de tamaños y recursos nativos corresponden a la entrega base; la ampliación se ejecutó en el tamaño compacto del mismo Pixel 3a.
+
+## Indicadores y finalización
+
+- Doce pruebas de emulador y cinco unitarias correctas; después se ampliaron y aprobaron las cuatro pruebas de interfaz con la finalización de los cuatro retos numéricos.
+- Se comprobó la posición de cada pregunta, cierre de práctica, cierre de prueba, diferencia entre respondidas/acertadas, consulta del resultado anterior y nuevo intento con elecciones vacías.
+- La primera ejecución detectó un fallo de presentación al reiniciar el desplazamiento de una pregunta. Se eliminó ese reinicio imperativo y cada pregunta crea su área de contenido con key; el recorrido completo posterior terminó correctamente.
+- La prueba de contexto se adaptó al identificador separado de validación. Las pruebas automáticas se ejecutaron con mpazIsolatedTests=true; no se desinstaló la aplicación habitual del usuario.
+- Se compararon intentos, respuestas de práctica y respuestas del examen de la instalación habitual antes/después de verificar: idénticos. El intento del usuario se conservó.
+- No se cambió el esquema SQLite ni el contenido de las preguntas en esta modificación.

@@ -30,6 +30,8 @@ Los cambios reutilizan las técnicas de las guías: componentes, Modifier, Mater
 
 La muestra se entrega en una rama de revisión. No se ha extendido el estilo al resto de las pantallas ni se cambió el esquema SQLite.
 
+Actualización de navegación: las prácticas generales y las pruebas ahora avanzan por preguntas e incluyen confirmación de finalización; se amplió el botón Volver. Este ajuste responde a la revisión del usuario y está explicado en PROGRESO_Y_FINALIZACION.md. No representa todavía un rediseño completo de las demás pantallas.
+
 ## Verificación de esta muestra
 
 - Compilación, cinco pruebas unitarias, doce pruebas de emulador y lint: correctos en la primera versión de la muestra.
