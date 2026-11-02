@@ -151,7 +151,7 @@ fun LessonEditor(s: SchoolUiState,vm: SchoolViewModel) {
                 (s.practice+s.test).forEach { q -> Text("${if(q.finalTest) "Prueba" else "Práctica"}: ${q.prompt}\nCorrecta: ${q.options[q.correct]}") }
                 Text("Las preguntas guardadas se conservan para mantener la trazabilidad de respuestas. Puedes agregar nuevas a un borrador.")
             }
-            if(editable) QuestionEditor(s,vm)
+            if(editable) key(s.practice.size+s.test.size) {QuestionEditor(s,vm)}
         }
     }
 }

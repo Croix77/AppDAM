@@ -24,7 +24,8 @@ data class SchoolUiState(
 )
 
 class SchoolViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository=SchoolRepository(SchoolDatabase(application))
+    private val database=SchoolDatabase(application)
+    private val repository=SchoolRepository(database)
     private val _state=MutableStateFlow(SchoolUiState())
     val state=_state.asStateFlow()
     private val preferences=ReadingPreferences(application)

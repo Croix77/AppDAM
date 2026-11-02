@@ -37,6 +37,8 @@ fun PhotoScreen(s: SchoolUiState,vm: SchoolViewModel) {
     val scope=rememberCoroutineScope()
     var cameraPath by rememberSaveable(student.id) {mutableStateOf("")}
     var pending by rememberSaveable(student.id) {mutableStateOf("")}
+    var savedPhoto by rememberSaveable(student.id) {mutableStateOf(student.photo)}
+    LaunchedEffect(student.photo) {if(savedPhoto!=student.photo) {pending="";savedPhoto=student.photo}}
     var error by remember {mutableStateOf<String?>(null)}
     var importing by remember {mutableStateOf(false)}
     val camera=rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
