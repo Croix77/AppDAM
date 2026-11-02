@@ -47,10 +47,10 @@ Los responsables de la tabla son una propuesta para repartir la revisión y la d
 
 ## Orden sugerido
 
-1. Terminar las tarjetas 13, 14 y 15.
-2. Validar la 16 antes de la presentación.
-3. Dejar la 17 para el final y solo si el docente la pide.
-4. Las tarjetas 18 y 19 son mejoras; no deben retrasar la entrega base.
+1. Compartir el APK release firmado e instalarlo en un teléfono físico; registrar cámara, galería, audio y descarga (tarjeta 15).
+2. Validar los objetivos y contenidos con el docente (tarjeta 16).
+3. Confirmar que los integrantes estén en Trello y registrar allí actividad real con enlaces a commits.
+4. Las tarjetas 18 y 19 son mejoras opcionales; no bloquean la entrega base.
 
 ## Evidencias que conviene guardar
 

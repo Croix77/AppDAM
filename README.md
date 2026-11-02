@@ -23,7 +23,7 @@ $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 .\gradlew.bat lintDebug
 ```
 
-El APK debug se genera en `app/build/outputs/apk/debug/app-debug.apk`. El APK release se genera en `app/build/outputs/apk/release/app-release.apk` y usa una clave local fuera del repositorio; nunca subas la clave ni las contraseñas a GitHub.
+El APK debug se genera en `app/build/outputs/apk/debug/app-debug.apk`. El APK release se genera en `app/build/outputs/apk/release/app-release.apk` y usa una clave local fuera del repositorio; nunca subas la clave ni las contraseñas a GitHub. Consulta [cómo configurar la firma release](docs/FIRMA_APK.md) en otro equipo.
 
 Las pruebas con `mpazIsolatedTests=true` utilizan el paquete `cl.duoc.m.validation`, separado de la instalación habitual, para proteger el progreso guardado por el usuario. Después de probar, ejecutar `assembleDebug` sin ese parámetro antes de distribuir el APK normal.
 
@@ -54,7 +54,7 @@ Estas credenciales son públicas únicamente para la demostración. No usar nomb
 - Docente toma o selecciona una imagen ficticia, la revisa y confirma antes de asociarla a un estudiante. Se conserva una copia privada local. El estudiante solo la visualiza. Restauración de avatar predeterminado.
 - UTP crea/edita borradores, agrega preguntas, revisa, autoriza, publica y deshabilita unidades; historial de acciones. Las preguntas guardadas se conservan para no alterar respuestas históricas.
 - Diseño compacto/medio/expandido con Window Size Classes: una/dos/tres columnas en inicio y contenido con ancho máximo. Formularios desplazables. A+/A− cambia el tamaño de texto y lo conserva con DataStore.
-- Animación de visibilidad/color para respuestas y estados de carga reales.
+- Transiciones suaves entre destinos y animación de visibilidad/color para respuestas y estados de carga reales.
 
 ## Estructura y material de referencia
 

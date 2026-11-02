@@ -65,3 +65,7 @@ Las pruebas de interfaz usan datos ficticios. No se usaron personas reales.
 - La app no tiene backend ni sincronización. Las pruebas no certifican seguridad de producción.
 - Las pruebas instrumentadas usan `cl.duoc.m.validation` con `mpazIsolatedTests=true` para no reemplazar datos de la instalación normal. El APK de entrega se construye sin ese parámetro.
 - `connectedDebugAndroidTest` necesita el emulador encendido y conectado. Si no aparece en `adb devices`, reiniciarlo con Cold Boot.
+
+## APK release
+
+`assembleRelease` completó correctamente el 2 de noviembre de 2026. El artefacto local `app/build/outputs/apk/release/app-release.apk` mide 9,757,726 bytes y `apksigner verify` confirma firma válida v2 con certificado de NQDESTROYER. SHA-256: `6663B3F38EA6FFE4CBE4332F52E02D04DDDE8D8C4C0A496FBA7D217301860E33`. La prueba de instalación y recursos nativos en un teléfono físico sigue pendiente. Para regenerarlo en otro entorno, seguir [FIRMA_APK.md](FIRMA_APK.md).
