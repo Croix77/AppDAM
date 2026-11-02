@@ -74,6 +74,8 @@ UTP y docente tienen cuentas preconfiguradas; el alta de instituciones, cursos y
 
 ## Equipo y evidencias
 
+Tablero Trello: [MPAZ PRO 2.º - Equipo 5](https://trello.com/invite/b/6ae90a63404d0afa0cd31554/ATTI360830b7568f314d8657f806489c8ab756B22D6F/mpaz-pro-2-equipo-5-%F0%9F%93%B1).
+
 Completar con los nombres y número de equipo confirmados antes de entregar. Registrar en Trello las tareas y contribuciones reales. Los commits se realizan por avances comprobados, con fechas y autoría reales. No incluyen los documentos del curso, datos personales ni claves de firma.
 
 Antes de entregar: validar OA y contenidos con el docente, ejecutar cámara/galería en teléfono físico y confirmar la fecha de cierre del repositorio indicada en la pauta.
