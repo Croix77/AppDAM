@@ -19,7 +19,8 @@ data class SchoolUiState(
     val answers: List<Answer> = emptyList(), val attempts: List<Attempt> = emptyList(), val assignment: Assignment? = null,
     val unavailable: String? = null, val progress: Int = 0, val choices: Map<Long,Int> = emptyMap(),
     val review: List<Pair<Question,Answer>> = emptyList(), val report: Report? = null,
-    val audit: List<AuditEntry> = emptyList(), val exportedText: String? = null
+    val audit: List<AuditEntry> = emptyList(), val exportedText: String? = null,
+    val student: User? = null, val assignments: List<Assignment> = emptyList()
 )
 
 class SchoolViewModel(application: Application) : AndroidViewModel(application) {
@@ -56,6 +57,11 @@ class SchoolViewModel(application: Application) : AndroidViewModel(application) 
         _state.value.lesson?.id?.let { loadLessonData(it) }
     }
     fun refresh()=launchWork { refreshData() }
+    fun newLesson() { _state.update { it.copy(lesson=null,practice=emptyList(),test=emptyList()) } }
+    fun selectStudent(id: Long)=launchWork {
+        require(_state.value.user?.role==Role.DOCENTE && _state.value.students.any { it.id==id }) { "Acceso reservado al docente asignado" }
+        _state.update { it.copy(student=repository.getUser(id),assignments=it.lessons.mapNotNull { l -> repository.assignment(id,l.id) }) }
+    }
     fun selectLesson(id: Long)=launchWork { _state.update { it.copy(choices=emptyMap(),report=null) }; loadLessonData(id) }
     private fun loadLessonData(id: Long) {
         val user=_state.value.user ?: return
@@ -89,7 +95,7 @@ class SchoolViewModel(application: Application) : AndroidViewModel(application) 
     fun assign(studentId: Long,lessonId: Long,count: String,start: String,end: String) = launchWork {
         require(assignmentErrors(count,start,end).isEmpty()) { "Revisa los campos marcados" }
         repository.assign(actor(),studentId,lessonId,count.toInt(),start,end)
-        _state.update { it.copy(message="Unidad asignada correctamente") }
+        _state.update { it.copy(message="Unidad asignada correctamente",assignments=it.lessons.mapNotNull { l -> repository.assignment(studentId,l.id) }) }
     }
     fun loadReport(studentId: Long,lessonId: Long)=launchWork { _state.update { it.copy(report=repository.report(actor(),studentId,lessonId),exportedText=null) } }
     fun noteErrors(note: String)=if(note.isBlank()) "Escribe una observación pedagógica" else null

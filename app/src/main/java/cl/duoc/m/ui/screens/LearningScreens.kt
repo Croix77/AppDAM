@@ -17,13 +17,13 @@ fun LessonScreen(s: SchoolUiState,onPractice: ()->Unit,onTest: ()->Unit) {
     val remaining=(s.assignment?.maxAttempts ?: 0)-s.attempts.size
     Page(l.subject,l.title) {
         Text("Tu avance: ${s.progress}%",style=MaterialTheme.typography.titleMedium)
-        LinearProgressIndicator(progress=s.progress/100f,modifier=Modifier.fillMaxWidth())
+        LinearProgressIndicator(progress={s.progress/100f},modifier=Modifier.fillMaxWidth())
         s.unavailable?.let { Notice(it,true) }
         Panel("Lo que aprenderás") { Text(l.objective) }
         Panel("Lee y descubre") { Text(l.explanation,style=MaterialTheme.typography.bodyLarge) }
         Panel("Un ejemplo para empezar") { Text(l.example,style=MaterialTheme.typography.bodyLarge) }
-        Action("1. Practicar",s.unavailable==null && s.practice.isNotEmpty(),onPractice)
-        Action("2. Prueba final · $remaining intentos disponibles",s.unavailable==null && ready && remaining>0 && s.test.isNotEmpty(),onTest)
+        Action("1. Practicar",!s.busy && s.unavailable==null && s.practice.isNotEmpty(),onPractice)
+        Action("2. Prueba final · $remaining intentos disponibles",!s.busy && s.unavailable==null && ready && remaining>0 && s.test.isNotEmpty(),onTest)
         if(!ready) Text("Completa correctamente la práctica para habilitar la prueba.")
         if(s.attempts.isNotEmpty()) Panel("Tus intentos") { s.attempts.forEach { Text("Intento ${it.number}: ${it.score} de ${it.total} respuestas correctas · ${it.date}") } }
         Text(l.origin,style=MaterialTheme.typography.labelSmall)

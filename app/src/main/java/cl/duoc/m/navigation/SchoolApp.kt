@@ -31,14 +31,16 @@ fun SchoolApp(wide: Boolean,vm: SchoolViewModel=viewModel()) {
                     NavHost(nav,"home",Modifier.weight(1f)) {
                         composable("home") {
                             if(user.role==Role.ESTUDIANTE) HomeScreen(user,s.lessons,wide,{vm.selectLesson(it);nav.navigate("lesson")},{s.lessons.firstOrNull()?.let {vm.selectLesson(it.id);nav.navigate("lesson")}})
-                            else Page("Panel de ${if(user.role==Role.DOCENTE) "docente" else "UTP"}",user.name) {
-                                Notice("Acceso de prueba verificado. La gestión se incorpora en el siguiente bloque.")
-                                s.lessons.forEach { Text("${it.subject} · ${it.title}") }
-                            }
+                            else StaffHome(s,{vm.selectStudent(it);nav.navigate("student")},{vm.selectLesson(it);nav.navigate("editor")},{vm.newLesson();nav.navigate("editor")},{vm.loadAudit();nav.navigate("audit")})
                         }
-                        composable("lesson") { if(user.role==Role.ESTUDIANTE && !s.busy) s.lesson?.let { LessonScreen(s,{nav.navigate("practice")},{vm.startTest();nav.navigate("test")}) } }
-                        composable("practice") { if(user.role==Role.ESTUDIANTE && !s.busy) PracticeScreen(s,vm::answerPractice) }
+                        composable("lesson") { if(user.role==Role.ESTUDIANTE) s.lesson?.let { LessonScreen(s,{nav.navigate("practice")},{vm.startTest();nav.navigate("test")}) } }
+                        composable("practice") { if(user.role==Role.ESTUDIANTE) PracticeScreen(s,vm::answerPractice) }
                         composable("test") { if(user.role==Role.ESTUDIANTE) TestScreen(s,vm::choose,vm::submitTest) }
+                        composable("student") { if(user.role==Role.DOCENTE) StudentManagement(s,vm,{student,lesson -> vm.loadReport(student,lesson);nav.navigate("report")},{nav.navigate("photo")}) }
+                        composable("report") { if(user.role==Role.DOCENTE) ReportScreen(s,vm,vm::exportReport) }
+                        composable("editor") { if(user.role==Role.UTP) LessonEditor(s,vm) }
+                        composable("audit") { if(user.role==Role.UTP) Page("Historial UTP","Últimos 100 cambios locales") {s.audit.forEach {Text("${it.date} · ${it.actor}\n${it.action}")} } }
+                        composable("photo") { if(user.role==Role.DOCENTE) Page("Imagen del estudiante") {Notice("La captura y galería se incorporan en el próximo bloque.")} }
                     }
                 }
             }
