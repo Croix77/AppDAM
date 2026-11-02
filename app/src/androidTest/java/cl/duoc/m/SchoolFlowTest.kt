@@ -1,4 +1,4 @@
-package cl.duoc.m
+﻿package cl.duoc.m
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -16,6 +16,8 @@ class SchoolFlowTest {
         login("estudiante","Aprendo123")
         compose.waitUntil(15000) {compose.onAllNodesWithText("Bienvenido a MPAZ PRO").fetchSemanticsNodes().isNotEmpty()}
         compose.onNodeWithText("Administrar imagen del estudiante").assertDoesNotExist()
+        compose.onNodeWithText("Lenguaje").performScrollTo().performClick()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("Elige una unidad").fetchSemanticsNodes().isNotEmpty()}
         compose.onNodeWithText("Una visita al huerto").performScrollTo().performClick()
         compose.waitUntil(10000) {compose.onAllNodesWithText("Lee y descubre").fetchSemanticsNodes().isNotEmpty()}
         compose.onNodeWithText("1. Practicar").performScrollTo().performClick()
@@ -52,6 +54,8 @@ class SchoolFlowTest {
     @Test fun mathAcceptsTypedResultAndLanguageAcceptsOrderedSteps() {
         login("estudiante","Aprendo123")
         compose.waitUntil(15000) {compose.onAllNodesWithText("Bienvenido a MPAZ PRO").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("Matem",substring=true).performScrollTo().performClick()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("Elige una unidad").fetchSemanticsNodes().isNotEmpty()}
         compose.onNodeWithText("Resolvemos en la feria").performScrollTo().performClick()
         compose.waitUntil(10000) {compose.onAllNodesWithText("1. Practicar").fetchSemanticsNodes().isNotEmpty()}
         compose.onNodeWithText("1. Practicar").performScrollTo().performClick()
@@ -61,6 +65,9 @@ class SchoolFlowTest {
         compose.waitUntil(10000) {compose.onAllNodesWithText("¡Bien hecho!",substring=true).fetchSemanticsNodes().isNotEmpty()}
         compose.onNodeWithText("←").performClick()
         compose.onNodeWithText("←").performClick()
+        compose.onNodeWithText("←").performClick()
+        compose.onNodeWithText("Lenguaje").performScrollTo().performClick()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("Elige una unidad").fetchSemanticsNodes().isNotEmpty()}
         compose.onNodeWithText("La biblioteca viajera").performScrollTo().performClick()
         compose.waitUntil(10000) {compose.onAllNodesWithText("1. Practicar").fetchSemanticsNodes().isNotEmpty()}
         compose.onNodeWithText("1. Practicar").performScrollTo().performClick()

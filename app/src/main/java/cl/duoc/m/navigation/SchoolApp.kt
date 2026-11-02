@@ -1,5 +1,6 @@
 package cl.duoc.m.navigation
 
+import android.net.Uri
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -8,7 +9,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.*
+import androidx.navigation.navArgument
 import cl.duoc.m.model.Role
 import cl.duoc.m.ui.HomeScreen
 import cl.duoc.m.ui.components.*
@@ -37,8 +40,14 @@ fun SchoolApp(columns: Int,vm: SchoolViewModel=viewModel()) {
                         enterTransition={fadeIn(tween(220))},exitTransition={fadeOut(tween(180))},
                         popEnterTransition={fadeIn(tween(220))},popExitTransition={fadeOut(tween(180))}) {
                         composable("home") {
-                            if(user.role==Role.ESTUDIANTE) HomeScreen(user,s.lessons,columns,{vm.selectLesson(it);nav.navigate("lesson")},{s.lessons.firstOrNull()?.let {vm.selectLesson(it.id);nav.navigate("lesson")}})
+                            if(user.role==Role.ESTUDIANTE) HomeScreen(user,s.lessons,columns,{nav.navigate("subject/${Uri.encode(it)}")},{s.lessons.firstOrNull()?.let {vm.selectLesson(it.id);nav.navigate("lesson")}})
                             else StaffHome(s,{vm.selectStudent(it);nav.navigate("student")},{vm.selectLesson(it);nav.navigate("editor")},{vm.newLesson();nav.navigate("editor")},{vm.loadAudit();nav.navigate("audit")})
+                        }
+                        composable("subject/{subject}",arguments=listOf(navArgument("subject"){type=NavType.StringType})) { entry ->
+                            if(user.role==Role.ESTUDIANTE) {
+                                val subject=Uri.decode(entry.arguments?.getString("subject").orEmpty())
+                                SubjectScreen(user,subject,s.lessons.filter { it.subject==subject },columns) {vm.selectLesson(it);nav.navigate("lesson")}
+                            }
                         }
                         composable("lesson") { if(user.role==Role.ESTUDIANTE) s.lesson?.let { LessonScreen(s,{nav.navigate("practice")},{vm.startTest();nav.navigate("test")}) } }
                         composable("practice") { if(user.role==Role.ESTUDIANTE) PracticeScreen(s,vm::answerPractice,vm::submitActivity) }

@@ -1,6 +1,6 @@
 # Arquitectura del MVP MPAZ PRO 2.º
 
-Documento alineado con el código de la rama `tomasdev`. Reemplaza el diseño inicial de seis niveles y doce tablas por el alcance real del MVP: una aplicación Android local, con datos ficticios y tres perfiles.
+Documento mantenido por NQDESTROYER y actualizado para la rama `feature/entrega-parcial-2`. Reemplaza el diseño inicial de seis niveles y doce tablas por el alcance real del MVP: una aplicación Android local, con datos ficticios y tres perfiles.
 
 ## 1. Alcance
 
@@ -24,6 +24,7 @@ Documento alineado con el código de la rama `tomasdev`. Reemplaza el diseño in
 |---|---|---|---|
 | Inicio de sesión | Sin sesión | Todos | `ui/screens/LoginScreen.kt` |
 | Inicio del estudiante | `home` | Estudiante | `ui/HomeScreen.kt` |
+| Asignaturas del estudiante | `subject/{subject}` | Estudiante | `ui/screens/SubjectScreen.kt` |
 | Detalle de unidad y contenido | `lesson` | Estudiante | `ui/screens/LearningScreens.kt` |
 | Práctica | `practice` | Estudiante | `ui/screens/LearningScreens.kt` |
 | Prueba final y revisión | `test` | Estudiante | `ui/screens/LearningScreens.kt` |
@@ -47,6 +48,8 @@ La barra superior permite volver, cambiar el tamaño del texto con A+/A− y cer
 | `ui` | Pantallas, componentes y tema Material 3. | `ui/**` |
 
 Flujo: una pantalla llama una acción del ViewModel; el ViewModel valida, pide datos al repositorio y actualiza `SchoolUiState`; Compose observa el estado y se recompone. La UI no consulta SQLite directamente.
+
+En el rol estudiante, la ruta `home` muestra las asignaturas y la ruta `subject` muestra las unidades de la asignatura elegida.
 
 ## 5. Base de datos local (SQLite versión 2)
 

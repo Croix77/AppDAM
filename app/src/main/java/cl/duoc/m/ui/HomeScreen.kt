@@ -14,10 +14,11 @@ import cl.duoc.m.model.*
 import cl.duoc.m.ui.components.*
 import cl.duoc.m.ui.screens.Avatar
 
-// Conserva bienvenida, logo y mensaje de Comenzar; agrega las unidades asignadas.
+// Conserva bienvenida, logo y mensaje de Comenzar; agrupa las unidades por asignatura.
 @Composable
-fun HomeScreen(user: User,lessons: List<Lesson>,columns: Int,onLesson: (Long)->Unit,onBegin: ()->Unit) {
+fun HomeScreen(user: User,lessons: List<Lesson>,columns: Int,onSubject: (String)->Unit,onBegin: ()->Unit) {
     val context=LocalContext.current
+    val subjects=lessons.map { it.subject }.distinct()
     Page("Bienvenido a MPAZ PRO", "Hola, ${user.name}. Aprende a tu ritmo.") {
         Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween) {
             Column(Modifier.weight(1f)) {
@@ -29,14 +30,13 @@ fun HomeScreen(user: User,lessons: List<Lesson>,columns: Int,onLesson: (Long)->U
         Avatar(user.photo,user.name)
         Action("Comenzar",lessons.isNotEmpty()) { Toast.makeText(context,"Iniciando MPAZ PRO",Toast.LENGTH_SHORT).show();onBegin() }
         Text("Elige una asignatura",style=MaterialTheme.typography.titleLarge)
-        if(lessons.isEmpty()) Notice("Tu docente aún no te asignó unidades publicadas.")
-        lessons.chunked(columns).forEach { pair -> Row(horizontalArrangement=Arrangement.spacedBy(16.dp)) {
-            pair.forEach { lesson -> Card(onClick={onLesson(lesson.id)},modifier=Modifier.weight(1f),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)) {
+        if(subjects.isEmpty()) Notice("Tu docente aún no te asignó unidades publicadas.")
+        subjects.chunked(columns).forEach { pair -> Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(16.dp)) {
+            pair.forEach { subject -> Card(onClick={onSubject(subject)},modifier=Modifier.weight(1f),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.secondaryContainer)) {
                 Column(Modifier.padding(20.dp),verticalArrangement=Arrangement.spacedBy(10.dp)) {
-                    Text(lesson.subject,style=MaterialTheme.typography.labelLarge)
-                    Text(lesson.title,style=MaterialTheme.typography.titleLarge)
-                    Text("Leer, practicar y comprobar lo aprendido")
-                    Text("Abrir unidad →",color=MaterialTheme.colorScheme.primary)
+                    Text(subject,style=MaterialTheme.typography.titleLarge)
+                    Text("${lessons.count { it.subject==subject }} unidad(es) asignada(s)")
+                    Text("Ver unidades →",color=MaterialTheme.colorScheme.primary)
                 }
             } }
             repeat(columns-pair.size) {Spacer(Modifier.weight(1f))}

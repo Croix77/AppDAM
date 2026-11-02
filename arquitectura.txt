@@ -1,5 +1,5 @@
 ARQUITECTURA DEL MVP MPAZ PRO 2.º
-Versión alineada con la rama tomasdev · Noviembre 2026
+Versión revisada por NQDESTROYER · Noviembre 2026
 
 1. ALCANCE
 - Aplicación Android para reforzar contenidos de Segundo Básico (7 u 8 años).
@@ -16,6 +16,7 @@ Versión alineada con la rama tomasdev · Noviembre 2026
 3. NAVEGACIÓN IMPLEMENTADA
 - Login: sin sesión. Archivo ui/screens/LoginScreen.kt
 - Home estudiante: ruta "home". Archivo ui/HomeScreen.kt
+- Asignaturas del estudiante: ruta "subject/{subject}". Archivo ui/screens/SubjectScreen.kt
 - Detalle de unidad y contenido: ruta "lesson". Archivo ui/screens/LearningScreens.kt
 - Práctica: ruta "practice". Archivo ui/screens/LearningScreens.kt
 - Prueba final y revisión: ruta "test". Archivo ui/screens/LearningScreens.kt
@@ -36,6 +37,8 @@ La barra superior permite volver, cambiar el tamaño del texto con A+/A− y cer
 - ui: pantallas, componentes y tema Material 3. ui/**
 
 Flujo: la pantalla llama una acción del ViewModel; el ViewModel valida, pide datos al repositorio y actualiza SchoolUiState; Compose observa el estado y se recompone. La UI no consulta SQLite directamente.
+
+En el rol estudiante, la ruta home muestra las asignaturas y la ruta subject muestra las unidades de la asignatura elegida.
 
 5. BASE DE DATOS LOCAL (SQLite versión 2)
 - users: cuenta ficticia, rol, curso, docente asignado, sal/hash y ruta de imagen.
