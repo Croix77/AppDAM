@@ -42,7 +42,7 @@ El signo `?` se sustituye con un argumento, no con código SQL. Así una comilla
 
 ## 3. Trabajo en segundo plano y transacciones
 
-Leer archivos, derivar claves o consultar disco puede bloquear el dibujo. `viewModelScope.launch` inicia la operación y `withContext(Dispatchers.IO)` la ejecuta en un hilo apropiado para disco. El indicador de carga corresponde a una operación real. Son herramientas complementarias para conectar el estado de la guía 11 con SQLite, no una capa arquitectónica nueva.
+Leer archivos o consultar disco puede bloquear el dibujo. `viewModelScope.launch` inicia la operación y `withContext(Dispatchers.IO)` la ejecuta en un hilo apropiado para disco. El indicador de carga corresponde a una operación real. Son herramientas complementarias para conectar el estado de la guía 11 con SQLite, no una capa arquitectónica nueva.
 
 `submitTest` abre una transacción, comprueba el límite, inserta el intento y sus respuestas, y llama `setTransactionSuccessful`. `finally` termina la transacción incluso ante un error. Si falta una respuesta o falla una inserción, no queda un intento a medias. El botón se deshabilita durante el guardado y se borran las elecciones al finalizar, evitando reenvíos involuntarios de un mismo formulario.
 
@@ -52,7 +52,7 @@ Ejercicio: localizar el `require` que controla el máximo de intentos y explicar
 
 El formulario y su validación siguen la guía 11. Autenticar es verificar una cuenta; autorizar es comprobar si esa cuenta puede ejecutar una acción. Ocultar el botón de cámara al estudiante no basta: `updatePhoto` exige un docente y comprueba que el estudiante pertenece a su curso. `report` hace la misma comprobación. UTP administra contenidos, pero no abre informes docentes.
 
-No guardamos claves en texto plano dentro de la base. `Passwords` crea una sal aleatoria y deriva la clave con PBKDF2; la comparación usa `MessageDigest.isEqual`. La sal no es una contraseña y puede guardarse junto a la derivación. Estas técnicas no están explicadas en las guías: se incluyen para no enseñar almacenamiento de contraseñas en claro.
+No guardamos claves en texto plano dentro de la base. `Passwords` crea una sal aleatoria y guarda un hash SHA-256 de la sal junto con la clave; al entrar se calcula el mismo hash y se compara. La sal no es una contraseña y puede guardarse junto al hash. Es una protección básica para una demo local, no seguridad de producción.
 
 Las credenciales de demostración siguen visibles en `SeedContent`/`SchoolDatabase` y README porque el prototipo usa cuentas ficticias públicas. Esta aplicación local no ofrece seguridad equivalente a un servidor. No usarla con cuentas reales. La sesión se pierde cuando el proceso termina; al rotar, el ViewModel mantiene su estado. La contraseña escrita no se conserva con `rememberSaveable`.
 
@@ -98,6 +98,6 @@ Ejercicio: descargar el informe, abrirlo y comparar sus resultados con la pantal
 
 ## 10. Verificación y defensa
 
-Las pruebas añadidas son un complemento, no código de interfaz que debas memorizar. `FormRulesTest` comprueba entradas inválidas. `SchoolRepositoryTest` usa una base separada que crea y elimina en cada prueba; comprueba permisos, fechas, persistencia e intentos. `SchoolFlowTest` recorre la interfaz real con Compose Test y guarda evidencias ficticias en Pictures/MPAZTest del emulador. No confundirlo con el funcionamiento productivo de galería.
+Las pruebas añadidas son un complemento, no código de interfaz que debas memorizar. `FormRulesTest` comprueba entradas inválidas. `SchoolRepositoryTest` usa una base separada que crea y elimina en cada prueba; comprueba permisos, fechas, persistencia e intentos. `SchoolFlowTest` recorre la interfaz real con Compose Test. No confundirlo con el funcionamiento productivo de galería.
 
-Para practicar: agregar una validación, cambiar un componente, identificar una consulta y mostrar persistencia al reiniciar. El recorrido completo está en RECORRIDO_DEMOSTRACION.md. No se requiere asistencia de IA para ejecutar o explicar la app; estudiar las funciones antes de la defensa.
+Para practicar: agregar una validación, cambiar un componente, identificar una consulta y mostrar persistencia al reiniciar. El recorrido completo está en RECORRIDO_DEMOSTRACION.md. Antes de la defensa conviene recorrer las pantallas y leer las funciones principales.

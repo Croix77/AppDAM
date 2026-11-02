@@ -43,4 +43,4 @@ Probar compacto, medio y expandido. Rotar el dispositivo en medio de un formular
 - ¿Por qué el estudiante no cambia fotos? No tiene acceso a la pantalla y el repositorio comprueba el rol/curso.
 - ¿Qué pasa al fallar un envío? La transacción no deja un intento parcial y se muestra el error.
 
-Los resultados reales de pruebas se registran en VERIFICACION.md al terminar. Completar integrantes, Trello y evidencias del dispositivo físico antes de entregar; no inventar participación ni fechas.
+Los resultados reales de las pruebas están en VERIFICACION.md. El plan y las tarjetas del equipo 5 están en PLANIFICACION.md; el enlace del tablero se agrega al README cuando se cree. Antes de entregar falta probar cámara, galería y audio en un teléfono físico. No inventar participación ni fechas.

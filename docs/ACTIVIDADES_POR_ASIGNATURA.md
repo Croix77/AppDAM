@@ -1,6 +1,6 @@
 # Actividades por asignatura
 
-Se conserva Segundo Básico y se mantiene una presentación clara para estudiantes de 12 años que refuerzan ese nivel. Son ejercicios originales, sin atribuirles códigos OA oficiales; deben validarse pedagógicamente con el docente.
+Se conserva Segundo Básico y se mantiene una presentación clara para estudiantes de 7 u 8 años que refuerzan ese nivel. Son ejercicios originales, sin atribuirles códigos OA oficiales; deben validarse pedagógicamente con el docente.
 
 | Asignatura | Unidad nueva | Práctica | Prueba final |
 |---|---|---|---|
