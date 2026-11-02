@@ -1,0 +1,126 @@
+package cl.duoc.m.viewmodel
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import cl.duoc.m.model.*
+import cl.duoc.m.repository.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+data class SchoolUiState(
+    val busy: Boolean = false, val user: User? = null, val loginErrors: Map<String,String> = emptyMap(),
+    val message: String? = null, val lessons: List<Lesson> = emptyList(), val students: List<User> = emptyList(),
+    val lesson: Lesson? = null, val practice: List<Question> = emptyList(), val test: List<Question> = emptyList(),
+    val answers: List<Answer> = emptyList(), val attempts: List<Attempt> = emptyList(), val assignment: Assignment? = null,
+    val unavailable: String? = null, val progress: Int = 0, val choices: Map<Long,Int> = emptyMap(),
+    val review: List<Pair<Question,Answer>> = emptyList(), val report: Report? = null,
+    val audit: List<AuditEntry> = emptyList(), val exportedText: String? = null
+)
+
+class SchoolViewModel(application: Application) : AndroidViewModel(application) {
+    private val repository=SchoolRepository(SchoolDatabase(application))
+    private val _state=MutableStateFlow(SchoolUiState())
+    val state=_state.asStateFlow()
+    private fun actor()=_state.value.user?.id ?: error("Inicia sesión")
+    private fun launchWork(work: suspend () -> Unit) {
+        if(_state.value.busy) return
+        _state.update { it.copy(busy=true,message=null) }
+        viewModelScope.launch {
+            try { withContext(Dispatchers.IO) { work() } }
+            catch (e: Exception) { _state.update { it.copy(message=e.message ?: "No pudimos completar la acción. Intenta otra vez.") } }
+            finally { _state.update { it.copy(busy=false) } }
+        }
+    }
+    fun login(username: String,password: String) {
+        val errors=FormRules.login(username,password)
+        _state.update { it.copy(loginErrors=errors,message=null) }
+        if(errors.isNotEmpty()) return
+        launchWork {
+            val user=repository.login(username,password)
+            if(user==null) _state.update { it.copy(loginErrors=mapOf("password" to "Usuario o clave incorrectos")) }
+            else { _state.value=SchoolUiState(user=user,busy=true); refreshData() }
+        }
+    }
+    fun logout() { if(!_state.value.busy) _state.value=SchoolUiState() }
+    fun dismissMessage() { _state.update { it.copy(message=null) } }
+    private fun refreshData() {
+        val user=repository.getUser(actor()) ?: error("Usuario no encontrado")
+        val lessons=repository.lessons(user.id)
+        val students=if(user.role==Role.DOCENTE) repository.students(user.id) else emptyList()
+        _state.update { it.copy(user=user,lessons=lessons,students=students) }
+        _state.value.lesson?.id?.let { loadLessonData(it) }
+    }
+    fun refresh()=launchWork { refreshData() }
+    fun selectLesson(id: Long)=launchWork { _state.update { it.copy(choices=emptyMap(),report=null) }; loadLessonData(id) }
+    private fun loadLessonData(id: Long) {
+        val user=_state.value.user ?: return
+        val lesson=repository.getLesson(id)
+        if(user.role==Role.ESTUDIANTE) {
+            require(repository.lessons(user.id).any { it.id==id }) { "Esta unidad no está asignada" }
+            _state.update { it.copy(lesson=lesson,practice=repository.questions(id,false),test=repository.questions(id,true),answers=repository.practice(user.id,id),attempts=repository.attempts(user.id,id),assignment=repository.assignment(user.id,id),unavailable=repository.available(user.id,id),progress=repository.progress(user.id,id),review=repository.testReview(user.id,id)) }
+        } else _state.update { it.copy(lesson=lesson,practice=repository.questions(id,false),test=repository.questions(id,true)) }
+    }
+    fun answerPractice(questionId: Long,choice: Int)=launchWork {
+        val id=_state.value.lesson?.id ?: return@launchWork
+        repository.savePractice(actor(),id,questionId,choice)
+        loadLessonData(id)
+    }
+    fun choose(questionId: Long,choice: Int) { if(!_state.value.busy) _state.update { it.copy(choices=it.choices+(questionId to choice)) } }
+    fun startTest() { if(!_state.value.busy) _state.update { it.copy(choices=emptyMap()) } }
+    fun submitTest()=launchWork {
+        val s=_state.value
+        repository.submitTest(actor(),s.lesson!!.id,s.choices)
+        _state.update { it.copy(choices=emptyMap(),message="Prueba guardada. Revisa tus respuestas.") }
+        loadLessonData(s.lesson.id)
+    }
+    fun assignmentErrors(count: String,start: String,end: String): Map<String,String> = buildMap {
+        if((count.toIntOrNull() ?: 0) !in 1..5) put("count","Escribe un número entre 1 y 5")
+        val first=runCatching { java.time.LocalDate.parse(start) }.getOrNull()
+        val last=runCatching { java.time.LocalDate.parse(end) }.getOrNull()
+        if(first==null) put("start","Usa una fecha válida: AAAA-MM-DD")
+        if(last==null) put("end","Usa una fecha válida: AAAA-MM-DD")
+        if(first!=null && last!=null && last<first) put("end","Debe ser igual o posterior a la fecha inicial")
+    }
+    fun assign(studentId: Long,lessonId: Long,count: String,start: String,end: String) = launchWork {
+        require(assignmentErrors(count,start,end).isEmpty()) { "Revisa los campos marcados" }
+        repository.assign(actor(),studentId,lessonId,count.toInt(),start,end)
+        _state.update { it.copy(message="Unidad asignada correctamente") }
+    }
+    fun loadReport(studentId: Long,lessonId: Long)=launchWork { _state.update { it.copy(report=repository.report(actor(),studentId,lessonId),exportedText=null) } }
+    fun noteErrors(note: String)=if(note.isBlank()) "Escribe una observación pedagógica" else null
+    fun saveNote(note: String,validated: Boolean)=launchWork {
+        val r=_state.value.report ?: return@launchWork
+        require(noteErrors(note)==null) { "Escribe una observación pedagógica" }
+        repository.saveNote(actor(),r.student.id,r.lesson.id,note,validated)
+        _state.update { it.copy(report=repository.report(actor(),r.student.id,r.lesson.id),message="Observación guardada") }
+    }
+    fun exportReport()=launchWork {
+        val r=_state.value.report ?: return@launchWork
+        _state.update { it.copy(exportedText=repository.reportText(actor(),r.student.id,r.lesson.id)) }
+    }
+    fun clearExport() { _state.update { it.copy(exportedText=null) } }
+    fun lessonErrors(values: List<String>): Map<Int,String> = values.mapIndexedNotNull { index,value -> if(value.isBlank()) index to "Completa este campo" else null }.toMap()
+    fun saveLesson(id: Long?,subject: String,title: String,objective: String,text: String,example: String,origin: String)=launchWork {
+        val selected=repository.saveLesson(actor(),id,subject,title,objective,text,example,origin)
+        refreshData(); loadLessonData(selected)
+        _state.update { it.copy(message="Borrador guardado") }
+    }
+    fun setStatus(id: Long,target: UnitStatus)=launchWork { repository.setStatus(actor(),id,target);refreshData();_state.update { it.copy(message="Estado actualizado a ${target.name.lowercase().replace('_',' ')}") } }
+    fun questionErrors(prompt: String,options: List<String>,explanation: String): Map<Int,String> {
+        val errors=lessonErrors(listOf(prompt)+options+explanation).toMutableMap()
+        if(options.map { it.trim().lowercase() }.distinct().size!=3) options.indices.forEach { errors[it+1]="Usa alternativas diferentes" }
+        return errors
+    }
+    fun saveQuestion(prompt: String,options: List<String>,correct: Int,explanation: String,finalTest: Boolean)=launchWork {
+        val id=_state.value.lesson!!.id
+        repository.saveQuestion(actor(),id,prompt,options,correct,explanation,finalTest)
+        loadLessonData(id);_state.update { it.copy(message="Pregunta agregada") }
+    }
+    fun loadAudit()=launchWork { _state.update { it.copy(audit=repository.auditLog(actor())) } }
+    fun savePhoto(studentId: Long,path: String)=launchWork { repository.updatePhoto(actor(),studentId,path);refreshData();_state.update { it.copy(message="Imagen guardada") } }
+}
