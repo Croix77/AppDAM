@@ -20,13 +20,16 @@ data class SchoolUiState(
     val unavailable: String? = null, val progress: Int = 0, val choices: Map<Long,Int> = emptyMap(),
     val review: List<Pair<Question,Answer>> = emptyList(), val report: Report? = null,
     val audit: List<AuditEntry> = emptyList(), val exportedText: String? = null,
-    val student: User? = null, val assignments: List<Assignment> = emptyList()
+    val student: User? = null, val assignments: List<Assignment> = emptyList(), val largeText: Boolean = false
 )
 
 class SchoolViewModel(application: Application) : AndroidViewModel(application) {
     private val repository=SchoolRepository(SchoolDatabase(application))
     private val _state=MutableStateFlow(SchoolUiState())
     val state=_state.asStateFlow()
+    private val preferences=ReadingPreferences(application)
+    init {viewModelScope.launch {preferences.largeText.collect {value -> _state.update {it.copy(largeText=value)}}}}
+    fun toggleText()=launchWork {preferences.save(!_state.value.largeText)}
     private fun actor()=_state.value.user?.id ?: error("Inicia sesión")
     private fun launchWork(work: suspend () -> Unit) {
         if(_state.value.busy) return
@@ -44,11 +47,12 @@ class SchoolViewModel(application: Application) : AndroidViewModel(application) 
         launchWork {
             val user=repository.login(username,password)
             if(user==null) _state.update { it.copy(loginErrors=mapOf("password" to "Usuario o clave incorrectos")) }
-            else { _state.value=SchoolUiState(user=user,busy=true); refreshData() }
+            else { _state.value=SchoolUiState(user=user,busy=true,largeText=_state.value.largeText); refreshData() }
         }
     }
-    fun logout() { if(!_state.value.busy) _state.value=SchoolUiState() }
+    fun logout() { if(!_state.value.busy) _state.value=SchoolUiState(largeText=_state.value.largeText) }
     fun dismissMessage() { _state.update { it.copy(message=null) } }
+    fun showMessage(message: String) { _state.update { it.copy(message=message) } }
     private fun refreshData() {
         val user=repository.getUser(actor()) ?: error("Usuario no encontrado")
         val lessons=repository.lessons(user.id)
@@ -128,5 +132,18 @@ class SchoolViewModel(application: Application) : AndroidViewModel(application) 
         loadLessonData(id);_state.update { it.copy(message="Pregunta agregada") }
     }
     fun loadAudit()=launchWork { _state.update { it.copy(audit=repository.auditLog(actor())) } }
-    fun savePhoto(studentId: Long,path: String)=launchWork { repository.updatePhoto(actor(),studentId,path);refreshData();_state.update { it.copy(message="Imagen guardada") } }
+    fun savePhoto(studentId: Long,path: String)=launchWork {
+        require(_state.value.user?.role==Role.DOCENTE && _state.value.students.any {it.id==studentId}) {"Acceso reservado al docente asignado"}
+        val old=repository.getUser(studentId)?.photo
+        val stored=MediaFiles.save(getApplication(),studentId,path)
+        try {repository.updatePhoto(actor(),studentId,stored)} catch(e: Exception) {java.io.File(stored).delete();throw e}
+        old?.takeIf {it.isNotBlank()}?.let {java.io.File(it).delete()}
+        refreshData();_state.update {it.copy(student=repository.getUser(studentId),message="Imagen guardada")}
+    }
+    fun removePhoto(studentId: Long)=launchWork {
+        val old=repository.getUser(studentId)?.photo
+        repository.updatePhoto(actor(),studentId,"")
+        old?.takeIf {it.isNotBlank()}?.let {java.io.File(it).delete()}
+        refreshData();_state.update {it.copy(student=repository.getUser(studentId),message="Avatar restaurado")}
+    }
 }

@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import cl.duoc.m.R
 import cl.duoc.m.model.*
 import cl.duoc.m.ui.components.*
+import cl.duoc.m.ui.screens.Avatar
 
 // Conserva bienvenida, logo y mensaje de Comenzar; agrega las unidades asignadas.
 @Composable
@@ -25,6 +26,7 @@ fun HomeScreen(user: User,lessons: List<Lesson>,wide: Boolean,onLesson: (Long)->
             }
             Image(painterResource(R.drawable.logo_mpaz),"Logo de MPAZ PRO",Modifier.size(84.dp))
         }
+        Avatar(user.photo,user.name)
         Action("Comenzar",lessons.isNotEmpty()) { Toast.makeText(context,"Iniciando MPAZ PRO",Toast.LENGTH_SHORT).show();onBegin() }
         Text("Elige una asignatura",style=MaterialTheme.typography.titleLarge)
         if(lessons.isEmpty()) Notice("Tu docente aún no te asignó unidades publicadas.")

@@ -40,7 +40,7 @@ fun SchoolApp(wide: Boolean,vm: SchoolViewModel=viewModel()) {
                         composable("report") { if(user.role==Role.DOCENTE) ReportScreen(s,vm,vm::exportReport) }
                         composable("editor") { if(user.role==Role.UTP) LessonEditor(s,vm) }
                         composable("audit") { if(user.role==Role.UTP) Page("Historial UTP","Últimos 100 cambios locales") {s.audit.forEach {Text("${it.date} · ${it.actor}\n${it.action}")} } }
-                        composable("photo") { if(user.role==Role.DOCENTE) Page("Imagen del estudiante") {Notice("La captura y galería se incorporan en el próximo bloque.")} }
+                        composable("photo") { if(user.role==Role.DOCENTE) PhotoScreen(s,vm) }
                     }
                 }
             }

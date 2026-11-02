@@ -9,6 +9,12 @@ import cl.duoc.m.model.*
 import cl.duoc.m.ui.components.*
 import cl.duoc.m.viewmodel.*
 import java.time.LocalDate
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @Composable
 fun StaffHome(s: SchoolUiState,onStudent: (Long)->Unit,onEdit: (Long)->Unit,onNew: ()->Unit,onAudit: ()->Unit) {
@@ -66,6 +72,19 @@ fun StudentManagement(s: SchoolUiState,vm: SchoolViewModel,onReport: (Long,Long)
 @Composable
 fun ReportScreen(s: SchoolUiState,vm: SchoolViewModel,onExport: ()->Unit) {
     val r=s.report ?: return
+    val context=LocalContext.current
+    val scope=rememberCoroutineScope()
+    var export by rememberSaveable {mutableStateOf("")}
+    val saveFile=rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri ->
+        if(uri!=null) scope.launch {
+            try {
+                withContext(Dispatchers.IO) {requireNotNull(context.contentResolver.openOutputStream(uri)).bufferedWriter(Charsets.UTF_8).use {it.write(export)}}
+                vm.showMessage("Informe descargado")
+            } catch (_: Exception) {vm.showMessage("No pudimos guardar el informe. Elige otra ubicación.")}
+            finally {export=""}
+        } else {export="";vm.showMessage("Descarga cancelada")}
+    }
+    LaunchedEffect(s.exportedText) {s.exportedText?.let {export=it;vm.clearExport();saveFile.launch("informe_${r.student.id}_${r.lesson.id}.txt")}}
     var note by rememberSaveable(r.student.id,r.lesson.id,r.note) {mutableStateOf(r.note)}
     var validated by rememberSaveable(r.student.id,r.lesson.id,r.validated) {mutableStateOf(r.validated)}
     var submitted by rememberSaveable {mutableStateOf(false)}
