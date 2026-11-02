@@ -1,6 +1,6 @@
-# MPAZ PRO 2.º
+# Explora Marcela Paz
 
-Prototipo académico Android para DSY1105, Duoc UC. Apoya el refuerzo de contenidos de Segundo Básico con una interfaz legible para usuarios de 12 años. No es un sistema escolar de producción.
+Prototipo académico Android para DSY1105, Duoc UC, basado en el caso MPAZ PRO 2.º de la Escuela Escritora Marcela Paz. La identidad visual implementada se llama Explora Marcela Paz. Apoya el refuerzo de contenidos de Segundo Básico con una interfaz legible para usuarios de 12 años. No es un sistema escolar de producción.
 
 ## Ejecutar
 
@@ -39,7 +39,7 @@ Estas credenciales son públicas únicamente para la demostración. No usar nomb
 ## Funcionalidades
 
 - Login con validaciones por campo, contraseña oculta y navegación por rol.
-- Inicio que conserva bienvenida, logo y Toast de Comenzar; cuatro asignaturas y ocho unidades: las cuatro originales y cuatro nuevas unidades específicas por asignatura (42 preguntas en total).
+- Inicio con la identidad Explora Marcela Paz, logo de libro/camino/estrella, tarjeta ilustrada y cuatro accesos por asignatura. Contiene ocho unidades y 42 preguntas. Las unidades se muestran al abrir su asignatura; la tarjeta principal permite continuar una unidad real.
 - Nuevas prácticas: ordenar hechos de un relato, escribir resultados numéricos, secuenciar una experiencia científica e interpretar un plano de comunidad. Las pruebas finales usan selección de alternativas.
 - Explicaciones y ejemplos originales, ilustración vectorial propia e instrucciones de audio empaquetadas. Los objetivos son descripciones de demostración, no códigos OA oficiales certificados.
 - Práctica con retroalimentación, progreso SQLite y prueba final habilitada al completar correctamente la práctica.
@@ -70,7 +70,7 @@ Leer también [el recorrido de demostración](docs/RECORRIDO_DEMOSTRACION.md) y 
 
 ## Datos, materiales y alcance
 
-Todos los registros semilla son ficticios. Relato, ejercicios e ilustración `learning_garden.xml` son originales para este prototipo. El logo es el recurso preexistente aportado con el proyecto; revisar su autorización para cualquier distribución ajena a la actividad académica. El audio usa un texto de instrucciones original y una voz sintética local de demostración (Helena), sin servicios externos ni grabaciones personales.
+Todos los registros semilla son ficticios. Relato, ejercicios e ilustración `learning_garden.xml` son originales para este prototipo. El nuevo logo y la ilustración de inicio se prepararon con asistencia generativa desde el boceto aprobado; los iconos de asignatura son recursos vectoriales originales. El recurso de meme anterior fue retirado. Los recursos y su preparación están descritos en [Identidad Explora](docs/IDENTIDAD_EXPLORA.md). El audio usa un texto de instrucciones original y una voz sintética local de demostración (Helena), sin servicios externos ni grabaciones personales.
 
 El almacenamiento es de un solo dispositivo: no sincroniza entre el teléfono del docente y el del estudiante. Los roles permiten demostrar los flujos académicos dentro de una misma instalación, no sustituyen autenticación de servidor. No hay diagnósticos por IA. Los informes se interpretan y validan por el docente.
 

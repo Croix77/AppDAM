@@ -43,3 +43,12 @@ La aplicación no implementa sincronización remota ni backend. Las pruebas no c
 - La prueba de contexto se adaptó al identificador separado de validación. Las pruebas automáticas se ejecutaron con mpazIsolatedTests=true; no se desinstaló la aplicación habitual del usuario.
 - Se compararon intentos, respuestas de práctica y respuestas del examen de la instalación habitual antes/después de verificar: idénticos. El intento del usuario se conservó.
 - No se cambió el esquema SQLite ni el contenido de las preguntas en esta modificación.
+
+## Identidad Explora Marcela Paz
+
+- Compilación, cinco pruebas unitarias, doce pruebas de emulador y lint correctos al aplicar el boceto.
+- Se añadió una prueba de controles del avatar (aumentar/reducir texto y salir). Las cinco pruebas de interfaz pasaron en teléfono y en ancho expandido simulado.
+- Se inspeccionó una captura real del inicio con el nuevo logo, ilustración, textos interactivos y cuatro asignaturas; no se usa el boceto como una pantalla falsa.
+- El nombre visible, icono, acceso, audio e informes utilizan Explora Marcela Paz. Se conserva el applicationId y el esquema SQLite para actualizar la instalación habitual sin borrar los datos.
+- Las pruebas se ejecutaron en cl.duoc.m.validation; no reemplazaron la instalación que contiene el examen del usuario.
+- Después de instalar el APK normal actualizado, se compararon las tablas de práctica, intentos y respuestas con la copia previa: idénticas. El examen del usuario se conservó y se abrió el nuevo inicio en la instalación habitual.

@@ -29,9 +29,10 @@ class SchoolFlowTest {
     }
     @Test fun studentCanOpenAnAssignedUnitAndCannotEditPhotos() {
         login("estudiante","Aprendo123")
-        compose.waitUntil(15000) {compose.onAllNodesWithText("Bienvenido a MPAZ PRO").fetchSemanticsNodes().isNotEmpty()}
+        compose.waitUntil(15000) {compose.onAllNodesWithText("¿Qué exploramos?").fetchSemanticsNodes().isNotEmpty()}
         compose.onNodeWithText("Administrar imagen del estudiante").assertDoesNotExist()
         screenshot("home_student")
+        compose.onNodeWithText("Lenguaje").performScrollTo().performClick()
         compose.onNodeWithText("Una visita al huerto").performScrollTo().performClick()
         compose.waitUntil(10000) {compose.onAllNodesWithText("Lee y descubre").fetchSemanticsNodes().isNotEmpty()}
         screenshot("lesson")
@@ -82,6 +83,17 @@ class SchoolFlowTest {
         compose.onNodeWithText("Tomar foto de prueba").performScrollTo().assertIsEnabled()
         screenshot("photo_teacher")
     }
+    @Test fun newHomeKeepsReadingSettingsAndLogoutAccessible() {
+        login("estudiante","Aprendo123")
+        compose.waitUntil(15000) {compose.onAllNodesWithText("¿Qué exploramos?").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithContentDescription("Opciones del estudiante").performClick()
+        compose.onNodeWithText("Aumentar texto").performClick()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("Reducir texto").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("Reducir texto").performClick()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("Aumentar texto").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("Salir").assertIsEnabled().performClick()
+        compose.onNodeWithText("Entrar").assertExists()
+    }
     @Test fun utpCanSeeReviewWorkflow() {
         login("utp","Utp12345")
         compose.waitUntil(15000) {compose.onAllNodesWithText("Gestión pedagógica").fetchSemanticsNodes().isNotEmpty()}
@@ -92,11 +104,9 @@ class SchoolFlowTest {
     }
     @Test fun mathAcceptsTypedResultAndLanguageAcceptsOrderedSteps() {
         login("estudiante","Aprendo123")
-        compose.waitUntil(15000) {compose.onAllNodesWithText("Bienvenido a MPAZ PRO").fetchSemanticsNodes().isNotEmpty()}
+        compose.waitUntil(15000) {compose.onAllNodesWithText("¿Qué exploramos?").fetchSemanticsNodes().isNotEmpty()}
         compose.onNodeWithText("Matemática").performScrollTo().performClick()
         compose.onNodeWithText("Una visita al huerto").assertDoesNotExist()
-        compose.onNodeWithText("Ver todas").performScrollTo().performClick()
-        compose.onNodeWithText("Una visita al huerto").assertExists()
         compose.onNodeWithText("Resolvemos en la feria").performScrollTo().performClick()
         compose.waitUntil(10000) {compose.onAllNodesWithText("1. Practicar").fetchSemanticsNodes().isNotEmpty()}
         compose.onNodeWithText("1. Practicar").performScrollTo().performClick()
@@ -131,6 +141,8 @@ class SchoolFlowTest {
         compose.onNodeWithText("Reto 1 de 4").assertExists()
         compose.onNodeWithText("Volver").performClick()
         compose.onNodeWithText("Volver").performClick()
+        compose.onNodeWithText("Volver").performClick()
+        compose.onNodeWithText("Lenguaje").performScrollTo().performClick()
         compose.onNodeWithText("La biblioteca viajera").performScrollTo().performClick()
         compose.waitUntil(10000) {compose.onAllNodesWithText("1. Practicar").fetchSemanticsNodes().isNotEmpty()}
         compose.onNodeWithText("1. Practicar").performScrollTo().performClick()
