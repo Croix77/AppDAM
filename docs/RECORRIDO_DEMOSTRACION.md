@@ -14,7 +14,7 @@
 ## Docente
 
 1. Entrar con `docente / Profe123`.
-2. Seleccionar Estudiante Sol o Luna. Cambiar una asignación con fechas válidas y entre uno y cinco intentos. Probar fechas inválidas para ver errores por campo.
+2. En Mis cursos, abrir 2.º Básico A y seleccionar Estudiante Sol o Luna. Cambiar una asignación con fechas válidas y entre uno y cinco intentos. Probar fechas inválidas para ver errores por campo.
 3. Abrir un informe. Revisar objetivo, intentos y respuestas. Redactar una observación, validarla y guardar. Descargar TXT y abrirlo.
 4. Administrar imagen. Abrir galería, elegir una imagen de prueba, revisar y Guardar. Repetir con cámara. Cancelar alguna captura y verificar que no se modifica la imagen anterior.
 5. Cerrar y abrir la app. Entrar como estudiante y comprobar que ve la imagen y no puede editarla.
@@ -44,3 +44,18 @@ Probar compacto, medio y expandido. Rotar el dispositivo en medio de un formular
 - ¿Qué pasa al fallar un envío? La transacción no deja un intento parcial y se muestra el error.
 
 Los resultados reales de pruebas se registran en VERIFICACION.md al terminar. Completar integrantes, Trello y evidencias del dispositivo físico antes de entregar; no inventar participación ni fechas.
+
+
+## Trabajos con nota y comentario
+
+1. Como docente, entrar en Mis cursos → 2.º Básico A → Trabajos → Crear trabajo.
+2. Completar título, instrucciones y fecha. Asignarlo al curso.
+3. Salir y entrar como estudiante. Abrir Mis trabajos desde el inicio.
+4. Escribir una respuesta, guardar borrador y comprobar que reaparece al volver a entrar.
+5. Entregar y confirmar. El estado pasa a Entregado y la respuesta deja de ser editable.
+6. Como docente, volver al trabajo, abrir Revisar entrega y guardar una nota y comentario provisionales.
+7. Entrar como estudiante: la corrección provisional sigue oculta.
+8. Publicar evaluación como docente y consultar como estudiante: aparecen Revisado, la nota y el comentario.
+9. Comprobar que Mateo (`mateo / Aprendo123`), de 2.º Básico B, no recibe el trabajo asignado a 2.º Básico A.
+
+Este recorrido se realiza alternando cuentas en una instalación. No implica sincronización entre dispositivos.

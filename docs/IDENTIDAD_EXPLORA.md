@@ -27,16 +27,4 @@ Los iconos son vectores de Android guardados como recursos XML y mostrados con I
 - BrandLockup.kt: imagen del logo y nombre en texto real.
 - HomeScreen.kt: composición del inicio y lista de unidades por asignatura.
 
-Las dos ilustraciones se prepararon con la herramienta integrada de generación/edición de imágenes, usando como referencia el boceto visual aprobado. Después se exportaron a tamaños apropiados para Android conservando transparencia. No se generó una captura falsa para mostrarla como aplicación ejecutable: las capturas de verificación se obtienen del emulador.
-
-### Prompts finales de preparación de imágenes
-
-**Logo (edición de la extracción inicial):**
-
-> Edit this logo asset only: REMOVE ALL GLOW, luminous halos, blur, gradients and shadows from around every shape. Preserve the exact open-book silhouette, page shapes, winding path and star. Use flat opaque solid fills inside the shapes: deep teal book outline/path, violet and blue left pages, green and terracotta right pages, solid gold star and rays. Outside these crisp flat shapes alpha must be fully transparent with no colored haze. It must look like a clean flat vector logo printed on paper, not neon or a glowing sign. No words, no background, no other changes. Tight framing with small even transparent margin.
-
-**Ilustración de tarjeta (edición desde el boceto):**
-
-> Edit target: approved brand proposal board. Reproduce the exact decorative illustration INSIDE the dark teal hero card on the phone: open cream-colored book at bottom right with blue-teal outer binding, pale winding path rising from its center into layered green hills and a gold star with two short gold rays above. Output ONLY a standalone horizontal illustration asset. Transparent background. Keep the book and hills on the far right 45 percent, leave left 55 percent fully transparent for live interface text. Preserve the illustration's original colors, clean flat layered paper illustration style and composition. Aspect ratio about 2:1, book meets bottom and right edges, gold star near upper-right. Exclude the phone, card background, words, buttons, logos and all other elements. This is an asset for layering over a solid dark teal Compose card, not a rendered mockup.
-
-Modo utilizado: herramienta integrada image_gen; salida transparente. Las ilustraciones son recursos preparados con asistencia generativa; los textos pedagógicos siguen siendo los ejercicios originales documentados en el proyecto.
+Los archivos PNG mantienen su transparencia y se integran como recursos de Android. La interfaz se construye con componentes Compose; las capturas de verificación proceden del emulador.

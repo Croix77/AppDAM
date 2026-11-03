@@ -100,4 +100,21 @@ Ejercicio: descargar el informe, abrirlo y comparar sus resultados con la pantal
 
 Las pruebas añadidas son un complemento, no código de interfaz que debas memorizar. `FormRulesTest` comprueba entradas inválidas. `SchoolRepositoryTest` usa una base separada que crea y elimina en cada prueba; comprueba permisos, fechas, persistencia e intentos. `SchoolFlowTest` recorre la interfaz real con Compose Test y guarda evidencias ficticias en Pictures/MPAZTest del emulador. No confundirlo con el funcionamiento productivo de galería.
 
-Para practicar: agregar una validación, cambiar un componente, identificar una consulta y mostrar persistencia al reiniciar. El recorrido completo está en RECORRIDO_DEMOSTRACION.md. No se requiere asistencia de IA para ejecutar o explicar la app; estudiar las funciones antes de la defensa.
+Para practicar: agregar una validación, cambiar un componente, identificar una consulta y mostrar persistencia al reiniciar. El recorrido completo está en RECORRIDO_DEMOSTRACION.md. Antes de la defensa, estudiar las funciones y practicar el recorrido.
+
+## Login y textos de pantalla
+
+El login reutiliza el logo y la ilustración existentes. La composición usa Column, Row, Image, Surface, campos y Button de Material 3. BoxWithConstraints permite consultar el ancho disponible: desde 840 dp, ilustración y formulario se ubican en dos columnas. En teléfono aparecen uno debajo del otro, con desplazamiento para pantallas pequeñas y teclado abierto. No se agregan dependencias.
+
+Los accesos de prueba se muestran solo al tocar su botón; un Boolean con rememberSaveable controla ese bloque. Mostrar u ocultar la clave alterna PasswordVisualTransformation y VisualTransformation.None, sin cambiar la autenticación. Como complemento de teclado, ImeAction.Next permite avanzar y KeyboardActions con ImeAction.Done ejecuta el mismo envío del botón Entrar. La clave sigue sin guardarse con rememberSaveable y se limpia al enviar.
+
+Se retiraron de las pantallas los avisos repetidos sobre el prototipo y los comentarios técnicos de implementación. Las restricciones, autoría, alcance académico y uso de cuentas ficticias permanecen documentados. Se mantienen las explicaciones pedagógicas, los errores, el progreso y la confirmación de guardado.
+
+
+## Trabajos por curso y corrección manual
+
+La ampliación usa tres tablas SQLite nuevas y migración de versión 2 a 3, sin eliminar las anteriores. La asignación al curso guarda sus destinatarios; la respuesta puede permanecer como borrador o entregarse. El repositorio distingue el borrador privado de respuesta, la entrega y la corrección provisional del docente. Solo publicar hace visibles la nota y el comentario al estudiante.
+
+La nota se guarda en décimas enteras y se presenta con coma (65 → 6,5). La validación rechaza más de un decimal y valores fuera de rango. Entrega y publicación usan transacciones y comprueban rol, destinatario, plazo y estado. El detalle paso a paso, las clases y los límites están en TRABAJOS_Y_CURSOS.md.
+
+Las pantallas reutilizan los componentes de las guías. FilterChip elige asignatura/pestaña; AlertDialog confirma las acciones finales; imePadding deja espacio al teclado dentro de las páginas desplazables. No se agrega una librería ni un servidor.

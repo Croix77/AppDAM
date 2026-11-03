@@ -31,12 +31,16 @@ Las pruebas con `mpazIsolatedTests=true` utilizan el paquete `cl.duoc.m.validati
 |---|---|---|
 | Estudiante | estudiante | Aprendo123 |
 | Estudiante | luna | Aprendo123 |
+| Estudiante (2.º Básico B) | mateo | Aprendo123 |
 | Docente | docente | Profe123 |
 | UTP | utp | Utp12345 |
 
 Estas credenciales son públicas únicamente para la demostración. No usar nombres, fotos, RUT ni claves reales de alumnos. Las cuentas se crean en SQLite al instalar/iniciar la aplicación por primera vez; no hay registro público para autoasignarse roles privilegiados.
 
 ## Funcionalidades
+
+- Cursos separados en el panel docente: 2.º Básico A (Sol y Luna) y 2.º Básico B (Mateo).
+- Trabajos por curso con instrucciones y fecha límite, borrador y entrega escrita del estudiante. El docente guarda una corrección provisional y publica una nota de 1,0 a 7,0 con comentario. El estudiante solo ve la evaluación publicada.
 
 - Login con validaciones por campo, contraseña oculta y navegación por rol.
 - Mi perfil para estudiante, docente y UTP: datos ficticios de la cuenta, curso o área de trabajo, imagen y ajustes de lectura/sesión. El estudiante consulta además su docente y asignaturas asignadas; no puede editar su foto ni abrir informes pedagógicos desde este perfil.
@@ -67,13 +71,15 @@ app/src/main/java/cl/duoc/m/
 
 Guía 8: componentes base. Guía 9: adaptabilidad. Guía 11: formularios, navegación y ViewModel compartido. Guía 12: estado, DataStore y animaciones. Guía 13: cámara y galería. No se incorporan backend, Retrofit, Hilt, Room ni KSP. Las incorporaciones indispensables no desarrolladas en las guías están explicadas en [la guía complementaria](docs/GUIA_COMPLEMENTARIA.md).
 
+Consultar [Trabajos y cursos](docs/TRABAJOS_Y_CURSOS.md) para el recorrido nuevo, los límites de entrega y la migración SQLite v3.
+
 Leer también [el recorrido de demostración](docs/RECORRIDO_DEMOSTRACION.md) y [la matriz de requisitos](docs/REQUISITOS.md).
 
 ## Datos, materiales y alcance
 
-Todos los registros semilla son ficticios. Relato, ejercicios e ilustración `learning_garden.xml` son originales para este prototipo. El nuevo logo y la ilustración de inicio se prepararon con asistencia generativa desde el boceto aprobado; los iconos de asignatura son recursos vectoriales originales. El recurso de meme anterior fue retirado. Los recursos y su preparación están descritos en [Identidad Explora](docs/IDENTIDAD_EXPLORA.md). El audio usa un texto de instrucciones original y una voz sintética local de demostración (Helena), sin servicios externos ni grabaciones personales.
+Todos los registros semilla son ficticios. Relato, ejercicios e ilustración `learning_garden.xml` son originales para este prototipo. El logo y la ilustración de inicio corresponden al boceto aprobado; los iconos de asignatura son recursos vectoriales originales. El recurso de meme anterior fue retirado. Los recursos y su preparación están descritos en [Identidad Explora](docs/IDENTIDAD_EXPLORA.md). El audio reproduce instrucciones originales, sin servicios externos ni grabaciones personales.
 
-El almacenamiento es de un solo dispositivo: no sincroniza entre el teléfono del docente y el del estudiante. Los roles permiten demostrar los flujos académicos dentro de una misma instalación, no sustituyen autenticación de servidor. No hay diagnósticos por IA. Los informes se interpretan y validan por el docente.
+El almacenamiento es de un solo dispositivo: no sincroniza entre el teléfono del docente y el del estudiante. Los roles permiten demostrar los flujos académicos dentro de una misma instalación, no sustituyen autenticación de servidor. Los informes se interpretan y validan por el docente.
 
 UTP y docente tienen cuentas preconfiguradas; el alta de instituciones, cursos y usuarios no forma parte del MVP. El backend sugerido en el caso queda como evolución posterior. La configuración actual de Kotlin/AGP se conserva porque compila; una actualización de herramientas se debe abordar por separado.
 

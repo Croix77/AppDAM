@@ -1,5 +1,9 @@
 # Verificación del MVP
 
+## Validación ampliada más reciente
+
+El 2 de noviembre de 2026 se aprobaron 24 pruebas de emulador en tamaño compacto y 11 recorridos de interfaz en tamaño expandido simulado. Se volvieron a ejecutar y aprobaron cinco pruebas unitarias; compilación debug, release sin firmar y lint correctos. Los recorridos, incidencias de las ejecuciones iniciales y límites están detallados en [Validación ampliada](VALIDACION_2026-11-02.md). Las comprobaciones históricas siguientes no sustituyen esos límites.
+
 Fecha: 2 de noviembre de 2026. Entorno local: Windows, Android Studio JBR 21, SDK de compilación 36, emulador Pixel 3a x86_64 con API 37. El proyecto conserva minSdk 26 y targetSdk 36.
 
 ## Resultados comprobados
@@ -60,3 +64,26 @@ La aplicación no implementa sincronización remota ni backend. Las pruebas no c
 - Se comprobaron los ajustes de texto y la salida de sesión desde la nueva pantalla de perfil.
 - Los perfiles son de consulta; no modifican las cuentas ni agregan tablas SQLite. Las pruebas continuaron usando el identificador aislado de validación.
 - Tras actualizar la instalación habitual se abrió Mi perfil del estudiante y se compararon sus registros de aprendizaje con la copia anterior: respuestas e intentos conservados.
+
+## Login y simplificación de textos
+
+Se rediseñó el acceso con los recursos existentes y se redujeron los avisos repetidos en perfiles, actividades y paneles. La batería de 24 pruebas pasó durante la modificación; tras compactar la presentación se repitieron correctamente el login y el recorrido de práctica/prueba (dos pruebas), y después el login en tamaño expandido (una prueba). El ajuste final de la ilustración se inspeccionó en una captura real del login compacto y en la captura expandida. Compilación debug y lint finales correctos.
+
+Se instaló el APK normal con actualización conservando datos. La huella SHA-256 de la base habitual antes y después coincidió. Se restauró el tamaño del emulador y se dejó abierto el nuevo login. No se agregaron dependencias ni se cambió el esquema SQLite.
+
+## Trabajos y cursos
+
+Ampliación del 2 de noviembre de 2026 (fecha de Chile): SQLite v3, cursos separados, trabajos asignados a estudiantes del curso, borradores y entregas de texto, corrección provisional y publicación de nota/comentario.
+
+- Treinta pruebas de emulador aprobadas en la primera batería completa, incluidas cuatro de WorkRepository y dos recorridos de WorkFlow.
+- Ocho pruebas unitarias aprobadas: validación de notas, fecha, respuesta y publicación, además de las anteriores.
+- Dos recorridos de trabajos aprobados en pantalla expandida simulada (1600 × 1200, densidad 160), restaurando después la configuración original.
+- Tras ajustar colores, teclado y posición de la evaluación, se repitieron y aprobaron los trece recorridos de interfaz en teléfono (SchoolFlow y WorkFlow), las ocho pruebas unitarias y lint.
+- La primera compilación detectó un import faltante de dp en StaffScreens; se corrigió antes de ejecutar las baterías. Las ejecuciones de pruebas de esta ampliación terminaron sin fallos.
+- Se verificaron persistencia de borrador al cambiar de sesión, ocultamiento de la corrección provisional, publicación y consulta de nota 6,5, separación entre cursos y bloqueo de entregas ya enviadas.
+- La migración desde esquema v2 se comprobó conservando respuestas de práctica, intento, respuestas de examen, observación y ruta de avatar. La prueba anterior desde v1 continuó aprobada.
+- Se inspeccionaron capturas reales de cursos, creación, entregas, corrección docente y nota/comentario del estudiante.
+
+No se incorporan archivos adjuntos ni sincronización. Las reglas, límites y relación con las guías están en TRABAJOS_Y_CURSOS.md.
+
+Actualización de la instalación habitual: se abrió la cuenta docente y se comprobó la migración real a v3. integrity_check devolvió ok. Se compararon con la copia previa las filas completas de práctica, intentos, respuestas de examen, observaciones, unidades, preguntas, auditoría, usuarios anteriores y sus asignaciones: idénticas. La cuenta nueva de Mateo y sus asignaciones son las únicas incorporaciones a los datos de demostración anteriores. Se dejó abierto Mis cursos. No se copiaron los trabajos ni las notas de las pruebas a la instalación habitual.
