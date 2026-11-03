@@ -23,12 +23,17 @@ data class SchoolUiState(
     val student: User? = null, val assignments: List<Assignment> = emptyList(), val largeText: Boolean = false,
     val activityFeedback: Map<Long,String> = emptyMap(), val lessonProgress: Map<Long,Int> = emptyMap(),
     val testFinished: Boolean = false, val selectedSubject: String = "",
-    val assignedTeacherName: String = ""
+    val assignedTeacherName: String = "",
+    val selectedCourse: String = "", val works: List<SchoolWork> = emptyList(),
+    val work: SchoolWork? = null, val ownSubmissions: Map<Long,WorkSubmission> = emptyMap(),
+    val workStudents: List<WorkStudent> = emptyList(), val workStudent: User? = null,
+    val submission: WorkSubmission? = null
 )
 
 class SchoolViewModel(application: Application) : AndroidViewModel(application) {
     private val database=SchoolDatabase(application)
     private val repository=SchoolRepository(database)
+    private val workRepository=WorkRepository(database)
     private val _state=MutableStateFlow(SchoolUiState())
     val state=_state.asStateFlow()
     private val preferences=ReadingPreferences(application)
@@ -64,9 +69,52 @@ class SchoolViewModel(application: Application) : AndroidViewModel(application) 
         val progress=if(user.role==Role.ESTUDIANTE) lessons.associate {it.id to repository.progress(user.id,it.id)} else emptyMap()
         val teacherName=if(user.role==Role.ESTUDIANTE) user.teacherId?.let {repository.getUser(it)?.name}.orEmpty() else ""
         _state.update { it.copy(user=user,lessons=lessons,students=students,lessonProgress=progress,assignedTeacherName=teacherName) }
+        refreshWorks()
         _state.value.lesson?.id?.let { loadLessonData(it) }
     }
     fun refresh()=launchWork { refreshData() }
+    private fun refreshWorks() {
+        val user=_state.value.user ?: return
+        val works=if(user.role==Role.UTP) emptyList() else workRepository.works(user.id)
+        val own=if(user.role==Role.ESTUDIANTE) works.mapNotNull {task -> workRepository.submission(user.id,task.id,user.id)?.let {task.id to it}}.toMap() else emptyMap()
+        _state.update {it.copy(works=works,ownSubmissions=own)}
+    }
+    fun selectCourse(course: String) {
+        require(_state.value.students.any {it.course==course}) {"Curso no asignado"}
+        _state.update {it.copy(selectedCourse=course)}
+    }
+    fun newWork() {_state.update {it.copy(work=null,workStudents=emptyList(),workStudent=null,submission=null)}}
+    fun selectWork(id: Long)=launchWork {loadWorkData(id)}
+    private fun loadWorkData(id: Long) {
+        val user=_state.value.user ?: return
+        val task=workRepository.work(user.id,id)
+        val own=if(user.role==Role.ESTUDIANTE) workRepository.submission(user.id,id,user.id) else null
+        val students=if(user.role==Role.DOCENTE) workRepository.students(user.id,id) else emptyList()
+        _state.update {it.copy(work=task,submission=own,workStudents=students,workStudent=null)}
+    }
+    fun createWork(subject: String,title: String,instructions: String,due: String)=launchWork {
+        val id=workRepository.create(actor(),_state.value.selectedCourse,subject,title,instructions,due)
+        refreshWorks();loadWorkData(id)
+        _state.update {it.copy(message="Trabajo creado")}
+    }
+    fun saveWorkResponse(response: String,deliver: Boolean)=launchWork {
+        val id=_state.value.work?.id ?: return@launchWork
+        workRepository.saveResponse(actor(),id,response,deliver)
+        refreshWorks();loadWorkData(id)
+        _state.update {it.copy(message=if(deliver) "Trabajo entregado" else "Borrador guardado")}
+    }
+    fun selectWorkStudent(id: Long)=launchWork {
+        val task=_state.value.work ?: return@launchWork
+        val submission=workRepository.submission(actor(),task.id,id)
+        require(submission?.delivered==true) {"Todavía no hay una entrega"}
+        _state.update {it.copy(workStudent=repository.getUser(id),submission=submission)}
+    }
+    fun saveWorkReview(grade: String,feedback: String,publish: Boolean)=launchWork {
+        val s=_state.value;val task=s.work ?: return@launchWork;val student=s.workStudent ?: return@launchWork
+        workRepository.saveReview(actor(),task.id,student.id,grade,feedback,publish)
+        refreshWorks()
+        _state.update {it.copy(work=workRepository.work(actor(),task.id),workStudents=workRepository.students(actor(),task.id),submission=workRepository.submission(actor(),task.id,student.id),message=if(publish) "Evaluación publicada" else "Corrección guardada")}
+    }
     fun selectSubject(subject: String) {if(!_state.value.busy) _state.update {it.copy(selectedSubject=subject)} }
     fun newLesson() { _state.update { it.copy(lesson=null,practice=emptyList(),test=emptyList()) } }
     fun selectStudent(id: Long)=launchWork {

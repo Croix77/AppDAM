@@ -64,7 +64,6 @@ fun MathPracticeScreen(s: SchoolUiState,onActivity: (Long,String)->Unit,onBackTo
                     Text(listOf("CONSTRUYE EL NÚMERO","REÚNE CANTIDADES","ENCUENTRA LO QUE QUEDA","DESCUBRE EL PATRÓN").getOrElse(index) {"RESUELVE EL RETO"},fontSize=11.sp,letterSpacing=1.sp,color=blue,fontWeight=FontWeight.Bold)
                     NumberClues(q.prompt,index)
                     Text(q.prompt,fontSize=21.sp,lineHeight=29.sp,fontWeight=FontWeight.SemiBold,color=Color(0xFF21354C))
-                    Text("Piensa, escribe y comprueba. Puedes corregir tu respuesta.",fontSize=14.sp,lineHeight=20.sp,color=Color(0xFF637185))
                     OutlinedTextField(
                         value=if(correct) q.options[q.correct] else response,
                         onValueChange={response=it},modifier=Modifier.fillMaxWidth(),
@@ -82,7 +81,6 @@ fun MathPracticeScreen(s: SchoolUiState,onActivity: (Long,String)->Unit,onBackTo
                             Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
                                 Text("✓ ¡Bien hecho!",fontWeight=FontWeight.Bold,fontSize=19.sp,color=Color(0xFF24583F))
                                 Text(q.explanation,fontSize=16.sp,lineHeight=23.sp,color=Color(0xFF24583F))
-                                Text("Este reto ya quedó guardado.",fontSize=12.sp,color=Color(0xFF436650))
                             }
                         }
                     }
@@ -94,7 +92,6 @@ fun MathPracticeScreen(s: SchoolUiState,onActivity: (Long,String)->Unit,onBackTo
             }
             TextButton(onClick={showHelp=!showHelp},modifier=Modifier.align(Alignment.CenterHorizontally)) {Text(if(showHelp) "Cerrar ejemplo" else "¿Necesitas una pista? Ver ejemplo",color=blue)}
             if(showHelp) Surface(color=Color(0xFFE4ECFA),shape=RoundedCornerShape(16.dp)) {Text(s.lesson?.example ?: "",Modifier.padding(18.dp),fontSize=16.sp,lineHeight=24.sp,color=Color(0xFF21354C))}
-            Text("Sin apuro: cada intento de práctica te ayuda a aprender.",fontSize=12.sp,lineHeight=18.sp,color=Color(0xFF637185))
             Spacer(Modifier.height(12.dp))
         }
     }

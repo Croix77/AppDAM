@@ -33,7 +33,7 @@ fun HomeScreen(
     user: User, lessons: List<Lesson>, columns: Int,
     onLesson: (Long)->Unit, onSubject: (String)->Unit,
     progress: Map<Long,Int> = emptyMap(), busy: Boolean = false,
-    onProfile: ()->Unit={}, largeText: Boolean=false
+    onProfile: ()->Unit={}, largeText: Boolean=false, onWorks: ()->Unit={}
 ) {
     val context=LocalContext.current
     val next=lessons.firstOrNull {(progress[it.id] ?: 0) in 1..99}
@@ -75,6 +75,15 @@ fun HomeScreen(
                 }
             }
 
+            Card(onClick=onWorks,enabled=!busy,shape=RoundedCornerShape(18.dp),colors=CardDefaults.cardColors(containerColor=Color(0xFFE6E0EF))) {
+                Row(Modifier.fillMaxWidth().padding(20.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)) {
+                    Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(4.dp)) {
+                        Text("Mis trabajos",style=MaterialTheme.typography.titleLarge)
+                        Text("Entregas, notas y comentarios",style=MaterialTheme.typography.bodyMedium,color=MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Image(painterResource(R.drawable.explora_chevron),null,Modifier.size(24.dp))
+                }
+            }
             Text("¿Qué exploramos?",fontSize=23.sp,lineHeight=28.sp,fontWeight=FontWeight.Bold,color=ink)
             val tileColumns=if(columns>=3) 4 else 2
             groups.chunked(tileColumns).forEach {row ->

@@ -17,6 +17,10 @@ class SchoolFlowTest {
         compose.onNodeWithText("Clave").performTextInput(password)
         compose.onNodeWithText("Entrar").performScrollTo().performClick()
     }
+    private fun awaitConfirmation(text: String) {
+        compose.waitUntil(10000) {compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()}
+        compose.waitUntil(15000) {compose.onAllNodesWithText(text).fetchSemanticsNodes().isEmpty()}
+    }
     private fun screenshot(name: String) {
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
@@ -28,6 +32,105 @@ class SchoolFlowTest {
         }
         val uri=requireNotNull(context.contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values))
         context.contentResolver.openOutputStream(uri)!!.use {compose.onRoot().captureToImage().asAndroidBitmap().compress(android.graphics.Bitmap.CompressFormat.PNG,100,it)}
+    }
+    @Test fun loginRejectsEmptyAndWrongCredentialsAndAllowsRetry() {
+        screenshot("login_redesign")
+        compose.onNodeWithText("Estudiante · estudiante / Aprendo123").assertDoesNotExist()
+        compose.onNodeWithText("Accesos de prueba").performScrollTo().performClick()
+        compose.onNodeWithText("Estudiante · estudiante / Aprendo123").assertExists()
+        compose.onNodeWithText("Ocultar accesos de prueba").performScrollTo().performClick()
+        compose.onNodeWithText("Entrar").performScrollTo().performClick()
+        compose.onNodeWithText("Escribe tu usuario").assertExists()
+        compose.onNodeWithText("Escribe tu clave").assertExists()
+        login("estudiante","incorrecta")
+        compose.waitUntil(10000) {compose.onAllNodesWithText("Usuario o clave incorrectos").fetchSemanticsNodes().isNotEmpty()}
+        login("luna","Aprendo123")
+        compose.waitUntil(15000) {compose.onAllNodesWithText("¿Qué exploramos?").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithContentDescription("Abrir mi perfil").performClick()
+        compose.onNodeWithText("EST-004").assertExists()
+    }
+    @Test fun allSeedUnitsOpenAndTheLessonSurvivesActivityRecreation() {
+        val helper=cl.duoc.m.repository.SchoolDatabase(InstrumentationRegistry.getInstrumentation().targetContext)
+        val lessons=try {cl.duoc.m.repository.SchoolRepository(helper).lessons(4).take(8)} finally {helper.close()}
+        login("luna","Aprendo123")
+        compose.waitUntil(15000) {compose.onAllNodesWithText("¿Qué exploramos?").fetchSemanticsNodes().isNotEmpty()}
+        lessons.groupBy {it.subject}.forEach {(subject,units) ->
+            compose.onNodeWithText(subject).performScrollTo().performClick()
+            units.forEach {lesson ->
+                compose.onNodeWithText(lesson.title).performScrollTo().performClick()
+                compose.waitUntil(10000) {compose.onAllNodesWithText("Lee y descubre").fetchSemanticsNodes().isNotEmpty()}
+                compose.onNodeWithText(lesson.explanation).performScrollTo().assertExists()
+                if(lesson.id==1L) {
+                    compose.onNodeWithText("Escuchar instrucciones").performScrollTo().performClick()
+                    compose.onNodeWithText("Detener instrucciones de audio").performScrollTo().performClick()
+                    compose.activityRule.scenario.recreate()
+                    compose.onNodeWithText("Lee y descubre").assertExists()
+                    compose.onNodeWithText(lesson.title).assertExists()
+                }
+                compose.onNodeWithText("1. Practicar").performScrollTo().assertIsEnabled()
+                compose.onNodeWithText("2. Prueba final",substring=true).performScrollTo().assertIsNotEnabled()
+                compose.onNodeWithText("Volver").performClick()
+            }
+            compose.onNodeWithText("Volver").performClick()
+        }
+    }
+    @Test fun teacherCanValidateAndPersistAnObservation() {
+        login("docente","Profe123")
+        compose.waitUntil(15000) {compose.onAllNodesWithText("Mis cursos").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("2.º Básico A").performScrollTo().performClick()
+        compose.onAllNodesWithText("Ver perfil y aprendizaje")[0].performScrollTo().performClick()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("Consultar informe pedagógico").fetchSemanticsNodes().isNotEmpty()}
+        compose.onAllNodesWithText("Máximo de intentos (1 a 5)")[0].performScrollTo().performTextClearance()
+        compose.onAllNodesWithText("Máximo de intentos (1 a 5)")[0].performTextInput("0")
+        compose.onAllNodesWithText("Guardar asignación")[0].performScrollTo().performClick()
+        compose.onNodeWithText("Escribe un número entre 1 y 5").assertExists()
+        compose.onAllNodesWithText("Consultar informe pedagógico")[0].performScrollTo().performClick()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("Guardar observación").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("Fortalezas y aspectos a reforzar").performScrollTo().performTextClearance()
+        compose.onNodeWithText("Guardar observación").performScrollTo().performClick()
+        compose.onNodeWithText("Escribe una observación pedagógica").assertExists()
+        compose.onNodeWithText("Fortalezas y aspectos a reforzar").performScrollTo().performTextInput("Reforzar comprensión de instrucciones. Prueba automática.")
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
+        compose.onNode(isToggleable()).performScrollTo().performClick()
+        compose.onNode(isToggleable()).assertIsOn()
+        compose.onNodeWithText("Guardar observación").performScrollTo().performClick()
+        screenshot("report_after_save")
+        compose.onNodeWithText("Estado guardado:",substring=true).performScrollTo()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("Estado guardado: validado").fetchSemanticsNodes().isNotEmpty()}
+        awaitConfirmation("Observación guardada")
+        compose.onNodeWithText("Volver").performClick()
+        compose.onAllNodesWithText("Consultar informe pedagógico")[0].performScrollTo().performClick()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("Estado guardado: validado").fetchSemanticsNodes().isNotEmpty()}
+    }
+    @Test fun utpCanCreateQuestionsAndPublishThenDisableAUnit() {
+        login("utp","Utp12345")
+        compose.waitUntil(15000) {compose.onAllNodesWithText("Crear unidad").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("Crear unidad").performScrollTo().performClick()
+        compose.onNodeWithText("Guardar borrador").performScrollTo().performClick()
+        compose.onAllNodesWithText("Completa este campo").assertCountEquals(5)
+        listOf("Título" to "Unidad de validación", "Objetivo de aprendizaje (descripción)" to "Identificar una respuesta.","Explicación escrita" to "Leemos las instrucciones.","Ejemplo guiado" to "La alternativa correcta es A.","Autoría y permiso de uso" to "Material ficticio original de prueba.").forEach {(label,value) -> compose.onNodeWithText(label).performScrollTo().performTextInput(value)}
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
+        compose.onNodeWithText("Guardar borrador").performScrollTo().performClick()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("Agregar pregunta al borrador").fetchSemanticsNodes().isNotEmpty()}
+        awaitConfirmation("Borrador guardado")
+        listOf(false,true).forEach {finalTest ->
+            listOf("Pregunta" to "¿Cuál alternativa es correcta?", "Alternativa A" to "Primera", "Alternativa B" to "Segunda", "Alternativa C" to "Tercera", "Explicación de la respuesta" to "La primera es correcta.").forEach {(label,value) -> compose.onNodeWithText(label).performScrollTo().performTextInput(value)}
+            androidx.test.espresso.Espresso.closeSoftKeyboard()
+            if(finalTest) compose.onNode(isToggleable()).performScrollTo().performClick()
+            compose.onNodeWithText("Agregar pregunta al borrador").performScrollTo().performClick()
+            awaitConfirmation("Pregunta agregada")
+            val count=if(finalTest) "Preguntas de práctica (1) y prueba (1)" else "Preguntas de práctica (1) y prueba (0)"
+            compose.onNodeWithText("Preguntas de práctica (",substring=true).performScrollTo()
+            compose.waitUntil(10000) {compose.onAllNodesWithText(count).fetchSemanticsNodes().isNotEmpty()}
+        }
+        listOf("en revision","autorizado","publicado","deshabilitado").forEach {status ->
+            compose.onNodeWithText("Pasar a $status").performScrollTo().performClick()
+            compose.onNodeWithText("Estado:",substring=true).performScrollTo()
+            compose.waitUntil(10000) {compose.onAllNodesWithText("Estado: ${status.uppercase().replace('Ó','O')}").fetchSemanticsNodes().isNotEmpty()}
+        }
+        compose.onNodeWithText("Volver").performClick()
+        compose.onNodeWithText("Consultar historial de cambios").performScrollTo().performClick()
+        compose.onNodeWithText("Historial UTP").assertExists()
     }
     @Test fun studentCanOpenAnAssignedUnitAndCannotEditPhotos() {
         login("estudiante","Aprendo123")
@@ -77,20 +180,40 @@ class SchoolFlowTest {
     }
     @Test fun teacherCanReachPhotoAdministration() {
         login("docente","Profe123")
-        compose.waitUntil(15000) {compose.onAllNodesWithText("Tu curso").fetchSemanticsNodes().isNotEmpty()}
+        compose.waitUntil(15000) {compose.onAllNodesWithText("Mis cursos").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("2.º Básico A").performScrollTo().performClick()
         compose.onAllNodesWithText("Ver perfil y aprendizaje")[0].performScrollTo().performClick()
         compose.waitUntil(10000) {compose.onAllNodesWithText("Administrar imagen del estudiante").fetchSemanticsNodes().isNotEmpty()}
         compose.onNodeWithText("Administrar imagen del estudiante").performScrollTo().performClick()
         compose.onNodeWithText("Elegir desde galería").performScrollTo().assertIsEnabled()
-        compose.onNodeWithText("Tomar foto de prueba").performScrollTo().assertIsEnabled()
+        compose.onNodeWithText("Tomar foto").performScrollTo().assertIsEnabled()
         screenshot("photo_teacher")
+        compose.onNodeWithText("Volver").performClick()
         compose.onNodeWithText("Volver").performClick()
         compose.onNodeWithText("Volver").performClick()
         compose.onNodeWithText("Mi perfil").performClick()
         compose.onNodeWithText("Docente de prueba").assertExists()
-        compose.onNodeWithText("Curso a cargo").assertExists()
+        compose.onNodeWithText("Cursos a cargo").assertExists()
         compose.onNodeWithText("Estudiante Luna").assertDoesNotExist()
         screenshot("profile_teacher")
+    }
+    @Test fun cancellingCameraAndGalleryReturnsWithoutChangingTheAvatar() {
+        login("docente","Profe123")
+        compose.waitUntil(15000) {compose.onAllNodesWithText("Mis cursos").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("2.º Básico A").performScrollTo().performClick()
+        compose.onAllNodesWithText("Ver perfil y aprendizaje")[0].performScrollTo().performClick()
+        compose.waitUntil(10000) {compose.onAllNodesWithText("Administrar imagen del estudiante").fetchSemanticsNodes().isNotEmpty()}
+        compose.onNodeWithText("Administrar imagen del estudiante").performScrollTo().performClick()
+        val instrumentation=InstrumentationRegistry.getInstrumentation()
+        val automation=instrumentation.uiAutomation
+        listOf("Tomar foto","Elegir desde galería").forEach {label ->
+            compose.onNodeWithText(label).performScrollTo().performClick()
+            compose.waitUntil(10000) {automation.rootInActiveWindow?.packageName?.toString()?.let {it!=instrumentation.targetContext.packageName}==true}
+            automation.executeShellCommand("input keyevent KEYCODE_BACK").close()
+            compose.waitUntil(10000) {automation.rootInActiveWindow?.packageName?.toString()==instrumentation.targetContext.packageName}
+            compose.onNodeWithText("Imagen actual").assertExists()
+            compose.onNodeWithText("Guardar esta imagen").assertDoesNotExist()
+        }
     }
     @Test fun newHomeKeepsReadingSettingsAndLogoutAccessible() {
         login("estudiante","Aprendo123")

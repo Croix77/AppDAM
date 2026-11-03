@@ -28,7 +28,7 @@ fun SchoolApp(columns: Int,vm: SchoolViewModel=viewModel()) {
         val nav=rememberNavController()
         val entry by nav.currentBackStackEntryAsState()
         val route=entry?.destination?.route
-        Scaffold(topBar={if(!(s.user?.role==Role.ESTUDIANTE && route=="home")) {TopAppBar(title={Text(if(route!=null && route!="home") "Explora" else "Explora Marcela Paz",style=MaterialTheme.typography.titleMedium)},navigationIcon={
+        Scaffold(topBar={if(s.user!=null && !(s.user?.role==Role.ESTUDIANTE && route=="home")) {TopAppBar(title={Text(if(route!=null && route!="home") "Explora" else "Explora Marcela Paz",style=MaterialTheme.typography.titleMedium)},navigationIcon={
             if(s.user!=null && route!=null && route!="home") FilledTonalButton(
                 onClick={nav.popBackStack()},enabled=!s.busy,
                 modifier=Modifier.padding(start=8.dp).heightIn(min=48.dp).semantics {contentDescription="Volver a la pantalla anterior"},
@@ -43,14 +43,19 @@ fun SchoolApp(columns: Int,vm: SchoolViewModel=viewModel()) {
         })}},snackbarHost={SnackbarHost(snackbar)}) { padding ->
             Column(Modifier.fillMaxSize().padding(padding)) {
                 if(s.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
-                if(s.user==null) LoginScreen(s,vm::login)
+                if(s.user==null) LoginScreen(s,vm::login,vm::toggleText)
                 else {
                     val user=s.user!!
                     NavHost(nav,"home",Modifier.weight(1f)) {
                         composable("home") {
-                            if(user.role==Role.ESTUDIANTE) HomeScreen(user,s.lessons,columns,{vm.selectLesson(it);nav.navigate("lesson")},{vm.selectSubject(it);nav.navigate("subject")},s.lessonProgress,s.busy,{nav.navigate("profile")},s.largeText)
-                            else StaffHome(s,{vm.selectStudent(it);nav.navigate("student")},{vm.selectLesson(it);nav.navigate("editor")},{vm.newLesson();nav.navigate("editor")},{vm.loadAudit();nav.navigate("audit")})
+                            if(user.role==Role.ESTUDIANTE) HomeScreen(user,s.lessons,columns,{vm.selectLesson(it);nav.navigate("lesson")},{vm.selectSubject(it);nav.navigate("subject")},s.lessonProgress,s.busy,{nav.navigate("profile")},s.largeText,{nav.navigate("works")})
+                            else StaffHome(s,{vm.selectStudent(it);nav.navigate("student")},{vm.selectLesson(it);nav.navigate("editor")},{vm.newLesson();nav.navigate("editor")},{vm.loadAudit();nav.navigate("audit")},{vm.selectCourse(it);nav.navigate("course")})
                         }
+                        composable("course") {if(user.role==Role.DOCENTE) CourseScreen(s,{vm.selectStudent(it);nav.navigate("student")},{vm.selectWork(it);nav.navigate("work")},{vm.newWork();nav.navigate("work/new")})}
+                        composable("works") {if(user.role==Role.ESTUDIANTE) WorkListScreen(s) {vm.selectWork(it);nav.navigate("work")}}
+                        composable("work/new") {if(user.role==Role.DOCENTE) WorkEditor(s,vm) {nav.navigate("work") {popUpTo("work/new") {inclusive=true}}}}
+                        composable("work") {if(user.role in listOf(Role.DOCENTE,Role.ESTUDIANTE)) WorkDetailScreen(s,vm) {vm.selectWorkStudent(it);nav.navigate("work/review")}}
+                        composable("work/review") {if(user.role==Role.DOCENTE) WorkReviewScreen(s,vm)}
                         composable("profile") {AccountProfileScreen(s,vm::toggleText,vm::logout,{nav.popBackStack("home",inclusive=false)})}
                         composable("subject") {if(user.role==Role.ESTUDIANTE) SubjectUnitsScreen(s.selectedSubject,s.lessons,s.lessonProgress,s.busy) {vm.selectLesson(it);nav.navigate("lesson")} }
                         composable("lesson") { if(user.role==Role.ESTUDIANTE) s.lesson?.let { LessonScreen(s,{nav.navigate("practice")},{vm.startTest();nav.navigate("test")},{vm.showTestResult();nav.navigate("test")}) } }

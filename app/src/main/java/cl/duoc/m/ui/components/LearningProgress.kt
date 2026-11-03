@@ -17,10 +17,9 @@ fun LearningProgress(label: String, position: Int, total: Int, completed: Int, c
 
 @Composable
 fun PracticeCompleted(total: Int, onBack: ()->Unit, onReview: ()->Unit) {
-    Page("¡Práctica terminada!","Completaste todas las actividades de esta unidad.") {
+    Page("¡Práctica terminada!") {
         Panel("✓ $total/$total actividades completadas") {
-            Text("Tu avance ya quedó guardado en este dispositivo.")
-            Text("Ahora puedes volver a la unidad para rendir la prueba o revisar lo aprendido.")
+            Text("Avance guardado.")
         }
         Action("Volver a la unidad",onClick=onBack)
         OutlinedButton(onClick=onReview,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)) {Text("Revisar actividades")}

@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 @Composable
 fun Page(title: String, subtitle: String = "", content: @Composable ColumnScope.() -> Unit) {
     Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),contentAlignment=Alignment.TopCenter) {
-        Column(Modifier.widthIn(max=1000.dp).fillMaxWidth().padding(horizontal=20.dp).verticalScroll(rememberScrollState()).padding(vertical=24.dp),verticalArrangement=Arrangement.spacedBy(18.dp)) {
+        Column(Modifier.widthIn(max=1000.dp).fillMaxWidth().imePadding().padding(horizontal=20.dp).verticalScroll(rememberScrollState()).padding(vertical=24.dp),verticalArrangement=Arrangement.spacedBy(18.dp)) {
             Text(title,style=MaterialTheme.typography.headlineMedium)
             if(subtitle.isNotBlank()) Text(subtitle,style=MaterialTheme.typography.bodyLarge,color=MaterialTheme.colorScheme.onSurfaceVariant)
             content()

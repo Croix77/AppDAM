@@ -7,7 +7,7 @@ import java.security.MessageDigest
 import java.security.SecureRandom
 
 // Complemento a las guías: SQLiteOpenHelper crea la base local una sola vez.
-class SchoolDatabase(context: Context, name: String = "mpaz_school.db") : SQLiteOpenHelper(context, name, null, 2) {
+class SchoolDatabase(context: Context, name: String = "mpaz_school.db") : SQLiteOpenHelper(context, name, null, 3) {
     override fun onConfigure(db: SQLiteDatabase) { db.setForeignKeyConstraintsEnabled(true) }
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL("CREATE TABLE users(id INTEGER PRIMARY KEY, username TEXT UNIQUE NOT NULL, name TEXT NOT NULL, role TEXT NOT NULL, course TEXT NOT NULL, teacher_id INTEGER REFERENCES users(id), salt TEXT NOT NULL, password TEXT NOT NULL, photo TEXT NOT NULL DEFAULT '')")
@@ -31,12 +31,31 @@ class SchoolDatabase(context: Context, name: String = "mpaz_school.db") : SQLite
         }
         SeedContent.insert(db)
         SubjectActivities.insert(db)
+        createWorkTables(db)
     }
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         // Se agregan columnas/unidades; no se eliminan tablas ni respuestas anteriores.
         if (oldVersion < 2) {
             db.execSQL("ALTER TABLE questions ADD COLUMN kind TEXT NOT NULL DEFAULT 'SELECCION'")
             SubjectActivities.insert(db)
+        }
+        if (oldVersion < 3) createWorkTables(db)
+    }
+    private fun createWorkTables(db: SQLiteDatabase) {
+        db.execSQL("CREATE TABLE school_work(id INTEGER PRIMARY KEY AUTOINCREMENT, teacher_id INTEGER NOT NULL REFERENCES users(id), course TEXT NOT NULL, subject TEXT NOT NULL, title TEXT NOT NULL, instructions TEXT NOT NULL, due_date TEXT NOT NULL, created_at TEXT NOT NULL)")
+        db.execSQL("CREATE TABLE work_students(work_id INTEGER NOT NULL REFERENCES school_work(id), student_id INTEGER NOT NULL REFERENCES users(id), PRIMARY KEY(work_id,student_id))")
+        db.execSQL("CREATE TABLE work_submissions(work_id INTEGER NOT NULL, student_id INTEGER NOT NULL, response TEXT NOT NULL, submitted_at TEXT NOT NULL DEFAULT '', grade_tenths INTEGER CHECK(grade_tenths BETWEEN 10 AND 70), feedback TEXT NOT NULL DEFAULT '', review_published INTEGER NOT NULL DEFAULT 0 CHECK(review_published IN (0,1)), reviewed_at TEXT NOT NULL DEFAULT '', PRIMARY KEY(work_id,student_id), FOREIGN KEY(work_id,student_id) REFERENCES work_students(work_id,student_id))")
+        // Una segunda sección ficticia permite recorrer la separación por curso.
+        val teacherExists=db.rawQuery("SELECT id FROM users WHERE id=2 AND role='DOCENTE'",null).use {it.moveToFirst()}
+        val mateoExists=db.rawQuery("SELECT id FROM users WHERE username='mateo'",null).use {it.moveToFirst()}
+        if(teacherExists && !mateoExists) {
+            val salt=Passwords.salt()
+            val values=android.content.ContentValues().apply {
+                put("username","mateo");put("name","Estudiante Mateo");put("role","ESTUDIANTE")
+                put("course","2.º Básico B");put("teacher_id",2);put("salt",salt);put("password",Passwords.hash("Aprendo123",salt))
+            }
+            val studentId=db.insertOrThrow("users",null,values)
+            db.execSQL("INSERT INTO assignments(student_id,lesson_id,max_attempts,start_date,end_date) SELECT ?,lesson_id,max_attempts,start_date,end_date FROM assignments WHERE student_id=3",arrayOf(studentId))
         }
     }
 }

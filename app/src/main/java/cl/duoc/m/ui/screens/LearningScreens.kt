@@ -24,7 +24,7 @@ fun LessonScreen(s: SchoolUiState,onPractice: ()->Unit,onTest: ()->Unit,onResult
         Text("Tu avance: ${s.progress}%",style=MaterialTheme.typography.titleMedium)
         LinearProgressIndicator(progress={s.progress/100f},modifier=Modifier.fillMaxWidth())
         Text("Práctica: ${s.practice.count {q -> s.answers.any {it.questionId==q.id && it.correct}}}/${s.practice.size} actividades completadas")
-        if(ready) Notice("✓ Práctica terminada. Tu avance está guardado.")
+        if(ready) Notice("✓ Práctica terminada.")
         s.attempts.lastOrNull()?.let {last ->
             Notice("✓ Prueba enviada: ${last.total}/${last.total} preguntas respondidas. Correctas: ${last.score}/${last.total}.")
             Action("Ver último resultado",!s.busy,onResult)
@@ -40,7 +40,6 @@ fun LessonScreen(s: SchoolUiState,onPractice: ()->Unit,onTest: ()->Unit,onResult
         Action("2. Prueba final · $remaining intentos disponibles",!s.busy && s.unavailable==null && ready && remaining>0 && s.test.isNotEmpty(),onTest)
         if(!ready) Text("Completa correctamente la práctica para habilitar la prueba.")
         if(s.attempts.isNotEmpty()) Panel("Tus intentos") { s.attempts.forEach { Text("Intento ${it.number}: ${it.score} de ${it.total} respuestas correctas · ${it.date}") } }
-        Text(l.origin,style=MaterialTheme.typography.labelSmall)
     }
 }
 @Composable
@@ -57,7 +56,7 @@ fun PracticeScreen(s: SchoolUiState,onAnswer: (Long,Int)->Unit,onActivity: (Long
     }
     var activityIndex by rememberSaveable(s.lesson?.id) {mutableStateOf(s.practice.indexOfFirst {q -> s.answers.none {it.questionId==q.id && it.correct}}.coerceAtLeast(0))}
     val currentIndex=activityIndex.coerceIn(0,s.practice.lastIndex.coerceAtLeast(0))
-    key(currentIndex) { Page(if(reviewing) "Revisa tu práctica" else "Practica a tu ritmo","Una actividad a la vez. Tu avance se guarda al responder.") {
+    key(currentIndex) { Page(if(reviewing) "Revisa tu práctica" else "Practica a tu ritmo","") {
         s.unavailable?.let { Notice(it,true) }
         if(s.practice.isNotEmpty()) LearningProgress("Actividad",currentIndex+1,s.practice.size,completed,"Completadas")
         var showContext by rememberSaveable(s.lesson?.id) {mutableStateOf(false)}
@@ -80,7 +79,7 @@ fun PracticeScreen(s: SchoolUiState,onAnswer: (Long,Int)->Unit,onActivity: (Long
                         var response by rememberSaveable(q.id) {mutableStateOf("")}
                         val steps=q.options[q.correct].split(" → ")
                         val selected=if(answer?.correct==true) steps else if(response.isBlank()) emptyList() else response.split(" → ")
-                        Text("Toca los tres pasos en orden. Puedes empezar de nuevo.")
+                        Text("Toca los pasos en orden.")
                         steps.reversed().forEach {step -> OutlinedButton(onClick={response=(selected+step).joinToString(" → ")},modifier=Modifier.fillMaxWidth(),enabled=enabled && answer?.correct!=true && step !in selected) {Text(step)} }
                         if(selected.isNotEmpty()) Text(selected.mapIndexed {i,step -> "${i+1}. $step"}.joinToString("\n"))
                         OutlinedButton(onClick={response=""},enabled=enabled && answer?.correct!=true) {Text("Empezar de nuevo")}
@@ -107,12 +106,12 @@ fun TestScreen(s: SchoolUiState,onChoose: (Long,Int)->Unit,onSubmit: ()->Unit,on
     val remaining=(s.assignment?.maxAttempts ?: 0)-s.attempts.size
     if(s.testFinished && s.attempts.isNotEmpty()) {
         val last=s.attempts.last()
-        Page("¡Prueba terminada!","Tus respuestas se enviaron y quedaron guardadas.") {
+        Page("¡Prueba terminada!","Respuestas guardadas.") {
             Panel("✓ Preguntas respondidas: ${last.total}/${last.total}") {
                 Text("Respuestas correctas: ${last.score}/${last.total}",style=MaterialTheme.typography.titleLarge)
                 Text("Intento ${last.number} de ${s.assignment?.maxAttempts ?: last.number}")
                 Text("Fecha de envío: ${last.date}")
-                Text(when {remaining==1 -> "Te queda 1 intento. Solo se usa al enviar otra prueba.";remaining>1 -> "Te quedan $remaining intentos. Solo se usan al enviar otra prueba.";else -> "Ya utilizaste todos los intentos disponibles."})
+                Text(when {remaining==1 -> "Te queda 1 intento.";remaining>1 -> "Te quedan $remaining intentos.";else -> "Ya utilizaste todos los intentos disponibles."})
             }
             Action("Volver a la unidad",!s.busy,onBackToLesson)
             if(remaining>0 && s.unavailable==null) OutlinedButton(onClick=onRetry,enabled=!s.busy,modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)) {Text("Iniciar otro intento")}
@@ -130,7 +129,7 @@ fun TestScreen(s: SchoolUiState,onChoose: (Long,Int)->Unit,onSubmit: ()->Unit,on
     var questionIndex by rememberSaveable(s.lesson?.id,s.attempts.size) {mutableStateOf(0)}
     val currentIndex=questionIndex.coerceIn(0,s.test.lastIndex.coerceAtLeast(0))
     val answered=s.test.count {it.id in s.choices}
-    key(currentIndex) { Page("Comprueba lo aprendido","Cada envío completo usa un intento. Puedes salir sin enviar.") {
+    key(currentIndex) { Page("Comprueba lo aprendido","Un intento se usa al enviar la prueba.") {
         s.unavailable?.let { Notice(it,true) }
         Text("Intentos disponibles: $remaining")
         if(s.test.isNotEmpty()) LearningProgress("Pregunta",currentIndex+1,s.test.size,answered,"Respondidas")

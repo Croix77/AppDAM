@@ -19,7 +19,55 @@ class SchoolRepositoryTest {
         assertNull(repo.login("' OR 1=1 --","Aprendo123"))
         assertEquals(4,repo.lessons(3).map {it.subject}.distinct().size)
         assertEquals(8,repo.lessons(3).size)
-        assertEquals(2,repo.students(2).size)
+        assertEquals(3,repo.students(2).size)
+    }
+    @Test fun everyAssignedUnitCanBeCompletedWithoutMixingStudents() {
+        repo.lessons(3).forEach { lesson ->
+            val practice=repo.questions(lesson.id,false)
+            val test=repo.questions(lesson.id,true)
+            assertTrue(lesson.title,practice.isNotEmpty() && test.isNotEmpty())
+            forbidden {repo.submitTest(3,lesson.id,test.associate {it.id to it.correct})}
+            practice.forEach { q ->
+                assertTrue(q.prompt,q.correct in q.options.indices)
+                if(q.kind!=ActivityKind.SELECCION) assertTrue(FormRules.activityResponse(q,q.options[q.correct]))
+                repo.savePractice(3,lesson.id,q.id,q.correct)
+            }
+            val attempt=repo.submitTest(3,lesson.id,test.associate {it.id to it.correct})
+            assertEquals(test.size,attempt.score)
+            assertEquals(100,repo.progress(3,lesson.id))
+            assertTrue(repo.testReview(3,lesson.id).all {it.second.correct})
+            assertEquals(0,repo.progress(4,lesson.id))
+            assertTrue(repo.attempts(4,lesson.id).isEmpty())
+        }
+    }
+    @Test fun invalidAnswersAndAssignmentsNeverCreateAttempts() {
+        val qs=repo.questions(1,true)
+        repo.questions(1,false).forEach {repo.savePractice(3,1,it.id,it.correct)}
+        forbidden {repo.submitTest(3,1,qs.associate {it.id to -1})}
+        forbidden {repo.submitTest(3,1,qs.associate {it.id to it.correct}+(999L to 0))}
+        forbidden {repo.assign(2,3,1,0,"2026-01-01","2030-01-01")}
+        forbidden {repo.assign(2,3,1,6,"2026-01-01","2030-01-01")}
+        forbidden {repo.assign(2,3,1,2,"2030-01-01","2026-01-01")}
+        forbidden {repo.assign(2,3,1,2,"2026-02-30","2030-01-01")}
+        assertTrue(repo.attempts(3,1).isEmpty())
+        repo.submitTest(3,1,qs.associate {it.id to it.correct})
+        repo.submitTest(3,1,qs.associate {it.id to it.correct})
+        forbidden {repo.assign(2,3,1,1,"2026-01-01","2030-01-01")}
+        assertEquals(2,repo.assignment(3,1)!!.maxAttempts)
+    }
+    @Test fun futureDatesDisabledUnitsAndForeignTeachersAreRejected() {
+        repo.assign(2,3,1,2,"2090-01-01","2090-12-31")
+        assertNotNull(repo.available(3,1))
+        try {repo.savePractice(3,1,1,0);fail()} catch(_: IllegalStateException) {}
+        repo.setStatus(1,1,UnitStatus.DESHABILITADO)
+        assertNotNull(repo.available(3,1))
+        helper.writableDatabase.execSQL("UPDATE users SET teacher_id=NULL WHERE id=4")
+        forbidden {repo.report(2,4,1)}
+        forbidden {repo.updatePhoto(2,4,"fake.jpg")}
+        forbidden {repo.saveNote(2,4,1,"Nota",true)}
+        forbidden {repo.assign(2,4,1,2,"2026-01-01","2030-01-01")}
+        forbidden {repo.auditLog(3)}
+        assertTrue(repo.auditLog(1).isNotEmpty())
     }
     @Test fun accessControlProtectsReportsAssignmentsAndPhotos() {
         forbidden {repo.report(3,3,1)}

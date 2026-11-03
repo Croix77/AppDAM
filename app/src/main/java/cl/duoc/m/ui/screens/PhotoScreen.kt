@@ -53,14 +53,12 @@ fun PhotoScreen(s: SchoolUiState,vm: SchoolViewModel) {
         }
     }
     Page("Imagen del estudiante",student.name) {
-        Notice("Solo el docente administra esta imagen. Usa un avatar o una imagen ficticia para esta demostración.")
         Panel(if(pending.isBlank()) "Imagen actual" else "Vista previa sin guardar") {
             Avatar(pending.ifBlank {student.photo},student.name)
-            Text("La foto es opcional. El estudiante no puede cambiarla.")
         }
         error?.let {Notice(it,true)}
         Action("Elegir desde galería",!s.busy && !importing) {runCatching {gallery.launch("image/*")}.onFailure {error="No hay una aplicación de galería disponible"}}
-        Action("Tomar foto de prueba",!s.busy && !importing) {
+        Action("Tomar foto",!s.busy && !importing) {
             try {
                 val directory=File(context.cacheDir,"camera").apply {mkdirs()}
                 val file=File.createTempFile("capture_",".jpg",directory)

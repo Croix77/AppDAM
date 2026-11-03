@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import cl.duoc.m.model.*
 import cl.duoc.m.ui.components.*
 import cl.duoc.m.viewmodel.*
@@ -17,18 +18,23 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun StaffHome(s: SchoolUiState,onStudent: (Long)->Unit,onEdit: (Long)->Unit,onNew: ()->Unit,onAudit: ()->Unit) {
+fun StaffHome(s: SchoolUiState,onStudent: (Long)->Unit,onEdit: (Long)->Unit,onNew: ()->Unit,onAudit: ()->Unit,onCourse: (String)->Unit={}) {
     val user=s.user ?: return
-    Page(if(user.role==Role.DOCENTE) "Tu curso" else "Gestión pedagógica", "${user.name} · ${user.course}") {
+    Page(if(user.role==Role.DOCENTE) "Mis cursos" else "Gestión pedagógica", user.name) {
         if(user.role==Role.DOCENTE) {
-            Notice("Asigna unidades autorizadas, revisa el aprendizaje y administra imágenes ficticias.")
-            s.students.forEach { student -> Panel(student.name) {
-                Text("${student.course} · Usuario: ${student.username}")
-                Action("Ver perfil y aprendizaje",!s.busy) {onStudent(student.id)}
-            } }
-            if(s.students.isEmpty()) Notice("No hay estudiantes asignados a tu curso.")
+            s.students.groupBy {it.course}.toSortedMap().forEach {(course,students) ->
+                Card(onClick={onCourse(course)},enabled=!s.busy,shape=androidx.compose.foundation.shape.RoundedCornerShape(22.dp),colors=CardDefaults.cardColors(containerColor=androidx.compose.ui.graphics.Color(0xFFEAF0E7))) {
+                    Column(Modifier.fillMaxWidth().padding(22.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
+                        Text(course,style=MaterialTheme.typography.headlineMedium)
+                        val count=s.works.count {it.course==course}
+                        Text("${students.size} ${if(students.size==1) "estudiante" else "estudiantes"} · $count ${if(count==1) "trabajo" else "trabajos"}",style=MaterialTheme.typography.bodyMedium)
+                        Text("Abrir curso →",style=MaterialTheme.typography.labelLarge,color=MaterialTheme.colorScheme.primary)
+                    }
+                }
+            }
+            if(s.students.isEmpty()) Notice("No tienes cursos asignados.")
         } else {
-            Notice("Flujo: borrador → en revisión → autorizado → publicado. Solo las unidades publicadas y asignadas llegan al estudiante.")
+            Text("Unidades de aprendizaje",style=MaterialTheme.typography.titleMedium)
             Action("Crear unidad",!s.busy,onNew)
             OutlinedButton(onClick=onAudit,enabled=!s.busy) { Text("Consultar historial de cambios") }
             s.lessons.forEach { lesson -> Panel(lesson.title) {
@@ -43,9 +49,8 @@ fun StaffHome(s: SchoolUiState,onStudent: (Long)->Unit,onEdit: (Long)->Unit,onNe
 @Composable
 fun StudentManagement(s: SchoolUiState,vm: SchoolViewModel,onReport: (Long,Long)->Unit,onPhoto: ()->Unit) {
     val student=s.student ?: return
-    Page(student.name,"${student.course} · Perfil ficticio") {
+    Page(student.name,student.course) {
         Action("Administrar imagen del estudiante",!s.busy,onPhoto)
-        Notice("La imagen solo puede cambiarla el docente. No uses fotografías ni datos reales de menores.")
         s.lessons.forEach { lesson ->
             val a=s.assignments.firstOrNull { it.lessonId==lesson.id }
             var count by rememberSaveable(student.id,lesson.id,a?.maxAttempts) { mutableStateOf((a?.maxAttempts ?: 2).toString()) }
@@ -105,7 +110,6 @@ fun ReportScreen(s: SchoolUiState,vm: SchoolViewModel,onExport: ()->Unit) {
             Text("Estado guardado: ${if(r.validated) "validado" else "pendiente de validación"}")
         }
         Action("Descargar informe de texto",!s.busy,onExport)
-        Notice("La interpretación pedagógica corresponde al docente. No se generan diagnósticos automáticos.")
     }
 }
 
@@ -121,7 +125,7 @@ fun LessonEditor(s: SchoolUiState,vm: SchoolViewModel) {
     var submitted by rememberSaveable(lesson?.id) {mutableStateOf(false)}
     val editable=lesson==null || lesson.status==UnitStatus.BORRADOR
     val errors=if(submitted) vm.lessonErrors(listOf(title,objective,text,example,origin)) else emptyMap()
-    Page(if(lesson==null) "Nueva unidad" else "Gestionar unidad","UTP · Contenidos de demostración para Segundo Básico") {
+    Page(if(lesson==null) "Nueva unidad" else "Gestionar unidad","Segundo Básico") {
         if(lesson!=null) {
             Notice("Estado: ${lesson.status.name.replace('_',' ')}")
             val targets=when(lesson.status) {
@@ -149,7 +153,7 @@ fun LessonEditor(s: SchoolUiState,vm: SchoolViewModel) {
         if(lesson!=null) {
             Panel("Preguntas de práctica (${s.practice.size}) y prueba (${s.test.size})") {
                 (s.practice+s.test).forEach { q -> Text("${if(q.finalTest) "Prueba" else "Práctica"}: ${q.prompt}\nCorrecta: ${q.options[q.correct]}") }
-                Text("Las preguntas guardadas se conservan para mantener la trazabilidad de respuestas. Puedes agregar nuevas a un borrador.")
+                Text("Las preguntas guardadas no se eliminan. Agrega nuevas en estado borrador.")
             }
             if(editable) key(s.practice.size+s.test.size) {QuestionEditor(s,vm)}
         }
